@@ -82,15 +82,19 @@
         $amounts[] = $total_amount;
     }
 
+    $allDates = array_unique(array_merge(array_keys($datePayments), array_keys($dateAmounts)));
+    sort($allDates);
+
+    $dates = [];
     $income = [];
-    foreach ($dates as $index => $date) {
-        // Find the corresponding payment and amount for the same date
+    foreach ($allDates as $date) {
         $payment = isset($datePayments[$date]) ? $datePayments[$date] : 0;
         $amount = isset($dateAmounts[$date]) ? $dateAmounts[$date] : 0;
-
-        // Subtract amount from payment for income
+        $dates[] = date('M j', strtotime($date)); // Display format "Mar 1"
         $income[] = $payment - $amount;
     }
+
+    $total_income = $total_payment - $total_amount;
 
 ?>
 
@@ -239,7 +243,7 @@
                                 <div class="card bg-success text-white mb-4">
                                     <div class="card-body" style="font-size: 25px;">Income
                                         <ol class="breadcrumb">
-                                            25
+                                        ₱ <?php echo number_format($total_income, 2); ?>
                                         </ol>
                                     </div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
@@ -357,8 +361,8 @@
                 }],
                 yAxes: [{
                     ticks: {
-                    min: 0,
-                    max: 40000,
+                    min: Math.min(...<?php echo json_encode($payments); ?>),
+                    max: Math.max(...<?php echo json_encode($payments); ?>),
                     maxTicksLimit: 5
                     },
                     gridLines: {
@@ -408,8 +412,8 @@
                 }],
                 yAxes: [{
                     ticks: {
-                    min: 0,
-                    max: 40000,
+                    min: Math.min(...<?php echo json_encode($amounts); ?>),
+                    max: Math.max(...<?php echo json_encode($amounts); ?>),
                     maxTicksLimit: 5
                     },
                     gridLines: {
@@ -427,7 +431,7 @@
             var myLineChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: <?php echo json_encode($dates); ?>,
+                labels: <?php echo json_encode($allDates); ?>,
                 datasets: [{
                 label: "Income (Payment - Expenses)",
                 lineTension: 0.3,
@@ -458,8 +462,8 @@
                 }],
                 yAxes: [{
                     ticks: {
-                    min: 0,
-                    max: 40000,
+                    min: Math.min(...<?php echo json_encode($income); ?>),
+                    max: Math.max(...<?php echo json_encode($income); ?>),
                     maxTicksLimit: 5
                     },
                     gridLines: {
