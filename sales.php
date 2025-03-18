@@ -7,6 +7,11 @@
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM sales";
+    $stmt_total_payment = $conn->prepare($sql_total_payment);
+    $stmt_total_payment->execute();
+    $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
+
 ?>
 <html lang="en">
     <head>
@@ -54,27 +59,27 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav align-items-center">
                          
-                            <a class="nav-link" href="index.html">
+                            <a class="nav-link" href="adminindex.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Home
                             </a>
                            
-                            <a class="nav-link" href="orders.html">
+                            <a class="nav-link" href="orders.php">
                                 <div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i></div>
                                 Orders
                             </a>
 
-                            <a class="nav-link" href="stocks.html">
+                            <a class="nav-link" href="stocks.php">
                                 <div class="sb-nav-link-icon"><i class="bi bi-box-seam-fill"></i></div>
                                 Stock
                             </a>
 
-                            <a class="nav-link" href="sales.html">
+                            <a class="nav-link" href="sales.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Sales
                             </a>
 
-                             <a class="nav-link" href="expenses.html">
+                             <a class="nav-link" href="expenses.php ">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Expenses
                             </a>
@@ -126,7 +131,7 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Sales</h1>
+                        <h1 class="mt-4">Sales : ₱ <?php echo number_format($total_payment, 2); ?></h1>
                        
                         <ul class="navbar-nav ms-auto  me-3 me-lg-4">
                             <li class="nav-item dropdown">

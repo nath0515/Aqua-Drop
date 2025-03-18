@@ -1,3 +1,99 @@
+<?php 
+	require ('session.php');
+	require ('db.php');
+
+    $sql = "SELECT * FROM sales";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM sales";
+    $stmt_total_payment = $conn->prepare($sql_total_payment);
+    $stmt_total_payment->execute();
+    $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
+
+    // Prepare arrays for the chart
+    $dates = [];
+    $payments = [];
+    
+    // Temporary array to store the sum of payments by date
+    $datePayments = [];
+    
+    foreach ($data as $row) {
+        // Format the timestamp into "Mar 1" format (also for sorting purposes)
+        $formatted_date = date('Y-m-d', strtotime($row['date'])); // Sortable format (e.g., 2025-03-01)
+        
+        // If the date already exists in the array, add the payment
+        if (isset($datePayments[$formatted_date])) {
+            $datePayments[$formatted_date] += $row['payment'];
+        } else {
+            $datePayments[$formatted_date] = $row['payment'];
+        }
+    }
+
+    // Sort the dates (ascending order)
+    ksort($datePayments); // ksort sorts by keys (dates) in ascending order
+
+    // Now, fill the dates and payments arrays from the aggregated results
+    foreach ($datePayments as $date => $total_payment) {
+        // Convert the sorted date to a more readable format (e.g., "Mar 1")
+        $formatted_date_display = date('M j', strtotime($date)); // Display format (e.g., "Mar 1")
+        $dates[] = $formatted_date_display;
+        $payments[] = $total_payment;
+    }
+
+    $sql = "SELECT * FROM expenses";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $data1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql_total_amounts = "SELECT SUM(amount) AS total_amount FROM expenses";
+    $stmt_total_amounts = $conn->prepare($sql_total_amounts);
+    $stmt_total_amounts->execute();
+    $total_amounts = $stmt_total_amounts->fetch(PDO::FETCH_ASSOC)['total_amount'];
+
+    // Prepare arrays for the chart
+    $dates = [];
+    $amounts = [];
+    
+    // Temporary array to store the sum of payments by date
+    $dateAmounts = [];
+    
+    foreach ($data1 as $row) {
+        // Format the timestamp into "Mar 1" format (also for sorting purposes)
+        $formatted_date = date('Y-m-d', strtotime($row['date'])); // Sortable format (e.g., 2025-03-01)
+        
+        // If the date already exists in the array, add the payment
+        if (isset($dateAmounts[$formatted_date])) {
+            $dateAmounts[$formatted_date] += $row['amount'];
+        } else {
+            $dateAmounts[$formatted_date] = $row['amount'];
+        }
+    }
+
+    // Sort the dates (ascending order)
+    ksort($dateAmounts); // ksort sorts by keys (dates) in ascending order
+
+    // Now, fill the dates and payments arrays from the aggregated results
+    foreach ($dateAmounts as $date => $total_amount) {
+        // Convert the sorted date to a more readable format (e.g., "Mar 1")
+        $formatted_date_display = date('M j', strtotime($date)); // Display format (e.g., "Mar 1")
+        $dates[] = $formatted_date_display;
+        $amounts[] = $total_amount;
+    }
+
+    $income = [];
+    foreach ($dates as $index => $date) {
+        // Find the corresponding payment and amount for the same date
+        $payment = isset($datePayments[$date]) ? $datePayments[$date] : 0;
+        $amount = isset($dateAmounts[$date]) ? $dateAmounts[$date] : 0;
+
+        // Subtract amount from payment for income
+        $income[] = $payment - $amount;
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -45,7 +141,7 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav align-items-center">
                          
-                            <a class="nav-link" href="index.html">
+                            <a class="nav-link" href="adminindex.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Home
                             </a>
@@ -60,12 +156,12 @@
                                 Stock
                             </a>
 
-                            <a class="nav-link" href="sales.html">
+                            <a class="nav-link" href="sales.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Sales
                             </a>
 
-                             <a class="nav-link" href="expenses.html">
+                             <a class="nav-link" href="expenses.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Expenses
                             </a>
@@ -125,15 +221,15 @@
                         <div class="row">
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-primary text-white mb-4">
-                                    <div class="card-body" style="font-size: 25px;">Income
+                                    <div class="card-body" style="font-size: 25px;">Sales
                                         <ol class="breadcrumb">
                             
-                                            $120,000
+                                            ₱ <?php echo number_format($total_payment, 2);?>
                                         </ol>
                                     </div>
                                     
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <a class="small text-white stretched-link" href="sales.php">View Details</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                     </div>
                                 </div>
@@ -141,20 +237,31 @@
                             
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-success text-white mb-4">
-                                    <div class="card-body" style="font-size: 25px;">New Orders
+                                    <div class="card-body" style="font-size: 25px;">Income
                                         <ol class="breadcrumb">
                                             25
                                         </ol>
                                     </div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="orders.html">View Details</a>
+                                        <a class="small text-white stretched-link" href="">View Details</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                     </div>
                                 </div>
                             </div>
 
-                            
-
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-danger text-white mb-4">
+                                    <div class="card-body" style="font-size: 25px;">Expenses
+                                        <ol class="breadcrumb">
+                                            ₱ <?php echo number_format($total_amounts, 2); ?>
+                                        </ol>
+                                    </div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="expenses.php">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             </div>
                             
@@ -208,9 +315,163 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="assets/demo/chart-area-demo.js"></script>
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="js/datatables-simple-demo.js"></script>
+        <script>
+            Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+            Chart.defaults.global.defaultFontColor = '#292b2c';
+
+            var ctx = document.getElementById("myAreaChart");
+            var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels:  <?php echo json_encode($dates); ?>,
+                datasets: [{
+                label: "Payments",
+                lineTension: 0.3,
+                backgroundColor: "rgba(2,117,216,0.2)",
+                borderColor: "rgba(2,117,216,1)",
+                pointRadius: 5,
+                pointBackgroundColor: "rgba(2,117,216,1)",
+                pointBorderColor: "rgba(255,255,255,0.8)",
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                pointHitRadius: 50,
+                pointBorderWidth: 2,
+                data: <?php echo json_encode($payments); ?>,
+                }],
+            },
+            options: {
+                scales: {
+                xAxes: [{
+                    time: {
+                    unit: 'date'
+                    },
+                    gridLines: {
+                    display: false
+                    },
+                    ticks: {
+                    maxTicksLimit: 7
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                    min: 0,
+                    max: 40000,
+                    maxTicksLimit: 5
+                    },
+                    gridLines: {
+                    color: "rgba(0, 0, 0, .125)",
+                    }
+                }],
+                },
+                legend: {
+                display: false
+                }
+            }
+            });
+
+
+            var ctx = document.getElementById("Expenses");
+            var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: <?php echo json_encode($dates); ?>,
+                datasets: [{
+                label: "Amounts",
+                lineTension: 0.3,
+                backgroundColor: "rgba(2,117,216,0.2)",
+                borderColor: "rgba(2,117,216,1)",
+                pointRadius: 5,
+                pointBackgroundColor: "rgba(2,117,216,1)",
+                pointBorderColor: "rgba(255,255,255,0.8)",
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                pointHitRadius: 50,
+                pointBorderWidth: 2,
+                data: <?php echo json_encode($amounts); ?>,
+                }],
+            },
+            options: {
+                scales: {
+                xAxes: [{
+                    time: {
+                    unit: 'date'
+                    },
+                    gridLines: {
+                    display: false
+                    },
+                    ticks: {
+                    maxTicksLimit: 7
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                    min: 0,
+                    max: 40000,
+                    maxTicksLimit: 5
+                    },
+                    gridLines: {
+                    color: "rgba(0, 0, 0, .125)",
+                    }
+                }],
+                },
+                legend: {
+                display: false
+                }
+            }
+            });
+
+            var ctx = document.getElementById("income");
+            var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: <?php echo json_encode($dates); ?>,
+                datasets: [{
+                label: "Income (Payment - Expenses)",
+                lineTension: 0.3,
+                backgroundColor: "rgba(2,117,216,0.2)",
+                borderColor: "rgba(2,117,216,1)",
+                pointRadius: 5,
+                pointBackgroundColor: "rgba(2,117,216,1)",
+                pointBorderColor: "rgba(255,255,255,0.8)",
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                pointHitRadius: 50,
+                pointBorderWidth: 2,
+                data: <?php echo json_encode($income); ?>,
+                }],
+            },
+            options: {
+                scales: {
+                xAxes: [{
+                    time: {
+                    unit: 'date'
+                    },
+                    gridLines: {
+                    display: false
+                    },
+                    ticks: {
+                    maxTicksLimit: 7
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                    min: 0,
+                    max: 40000,
+                    maxTicksLimit: 5
+                    },
+                    gridLines: {
+                    color: "rgba(0, 0, 0, .125)",
+                    }
+                }],
+                },
+                legend: {
+                display: false
+                }
+            }
+            });
+        </script>
     </body>
 </html>

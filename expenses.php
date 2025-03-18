@@ -7,6 +7,11 @@
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $sql_total_amount = "SELECT SUM(amount) AS total_amount FROM expenses";
+    $stmt_total_amount = $conn->prepare($sql_total_amount);
+    $stmt_total_amount->execute();
+    $total_amount = $stmt_total_amount->fetch(PDO::FETCH_ASSOC)['total_amount'];
+
 ?>
 <html lang="en">
     <head>
@@ -126,7 +131,7 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Expenses</h1>
+                        <h1 class="mt-4">Expenses: ₱ <?php echo number_format($total_amount, 2); ?></h1>
                        
                         <ul class="navbar-nav ms-auto  me-3 me-lg-4">
                             <li class="nav-item dropdown">
