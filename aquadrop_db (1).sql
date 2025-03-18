@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 18, 2025 at 10:43 AM
+-- Generation Time: Mar 18, 2025 at 05:08 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -36,14 +36,16 @@ CREATE TABLE IF NOT EXISTS `expenses` (
   `purpose` varchar(255) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   PRIMARY KEY (`expense_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `expenses`
 --
 
 INSERT INTO `expenses` (`expense_id`, `expense`, `date`, `purpose`, `amount`) VALUES
-(1, 'ahkjdwfgd awd', '2025-03-18 09:40:08', 'sdaegdasfwaf', 201.00);
+(1, 'ahkjdwfgd awd', '2025-03-18 09:40:08', 'sdaegdasfwaf', 201.00),
+(2, 'Tricycle', '2025-03-18 13:22:49', 'Flat Tire', 1000.00),
+(3, 'Filter', '2025-03-19 14:49:33', 'Change Filter', 30000.00);
 
 -- --------------------------------------------------------
 
@@ -107,14 +109,17 @@ CREATE TABLE IF NOT EXISTS `sales` (
   `type_id` int(11) NOT NULL,
   `payment` decimal(10,2) NOT NULL,
   PRIMARY KEY (`sales_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `sales`
 --
 
 INSERT INTO `sales` (`sales_id`, `name`, `date`, `quantity`, `type_id`, `payment`) VALUES
-(1, 'exequiel fernando', '2025-03-18 08:45:47', 5, 1, 200.00);
+(1, 'exequiel fernando', '2025-03-19 08:45:47', 5, 1, 200.00),
+(2, 'Jang Man Wol', '2025-03-18 13:15:26', 50, 2, 12300.00),
+(3, 'dadasdwa', '2025-03-18 14:29:58', 20, 2, 13000.00),
+(4, 'dasfdafrawf', '2025-03-19 14:30:13', 5, 2, 12345.00);
 
 -- --------------------------------------------------------
 
