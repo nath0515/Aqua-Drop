@@ -2,7 +2,7 @@
 	require ('session.php');
 	require ('db.php');
 
-	$sql = "SELECT * FROM orders";
+	$sql = "SELECT * FROM expenses";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -69,12 +69,12 @@
                                 Stock
                             </a>
 
-                            <a class="nav-link" href="sales.php">
+                            <a class="nav-link" href="sales.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Sales
                             </a>
 
-                             <a class="nav-link" href="expenses.php">
+                             <a class="nav-link" href="expenses.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Expenses
                             </a>
@@ -126,19 +126,16 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Orders</h1>
+                        <h1 class="mt-4">Expenses</h1>
                        
                         <ul class="navbar-nav ms-auto  me-3 me-lg-4">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" ><i class="bi bi-filter-circle-fill fs-2"></i></a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="orders.php">All</a></li>
-                                    <li><a class="dropdown-item" href="pending.php">Pending</a></li>
-                                    <li><a class="dropdown-item" href="accepted.php">Accepted</a></li>
-                                    <li><a class="dropdown-item" href="processing.php">Processing</a></li>
-                                    <li><a class="dropdown-item" href="delivering.php">Delivering</a></li>
-                                    <li><a class="dropdown-item" href="completed.php">Completed</a></li>
-                                    <li><a class="dropdown-item" href="cancelled.php">Cancelled</a></li>
+                                    <li><a class="dropdown-item" href="expenses.php">All</a></li>
+                                    <li><a class="dropdown-item" href="week_expenses.php">Week</a></li>
+                                    <li><a class="dropdown-item" href="month_expenses.php">Month</a></li>
+                                    <li><a class="dropdown-item" href="year_expenses.php">Year</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -149,45 +146,27 @@
                                 <table id="datatablesSimple">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Contact #</th>
-                                            <th>Address</th>
+                                            <th>Expense</th>
                                             <th>Date</th>
-                                            <th>Quantity</th>
-                                            <th>Type</th>
-                                             <th>Status</th>
-                                             <th>Rider</th>
-                                             <th>Action</th>
+                                            <th>Purpose</th>
+                                            <th>Amount</th>    
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Contact #</th>
-                                            <th>Address</th>
                                             <th>Date</th>
-                                            <th>Quantity</th>
-                                            <th>Type</th>
-                                            <th>Status</th>
-                                            <th>Rider</th>
-                                            <th>Action</th>
+                                            <th>Purpose</th>
+                                            <th>Amount</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <?php foreach($data as $row): ?>
                                         <tr>
-                                            <td><?php echo $row['name']?></td>
-                                            <td><?php echo $row['contact_number']?></td>
-                                            <td><?php echo $row['address']?></td>
+                                            <td><?php echo $row['expense']?></td>
                                             <td><?php echo $row['date']?></td>
-                                            <td><?php echo $row['quantity']?></td>
-                                            <td><?php echo $row['type_id']?></td>
-                                            <td><?php echo $row['status_id']?></td>
-                                            <td><?php echo $row['rider']?></td>
-                                            <td class="text-center align-middle">
-                                                <img src="icons/check.png" width="20" height="20" class="mx-auto d-block">
-                                            </td>
-                                            
+                                            <td><?php echo $row['purpose']?></td>
+                                            <td>₱ <?php echo $row['amount']?></td>
                                         </tr>
                                         <?php endforeach;?>
                                     </tbody>

@@ -169,7 +169,7 @@
                                             <td><?php echo $row['date']?></td>
                                             <td><?php echo $row['quantity']?></td>
                                             <td><?php echo $row['type_id']?></td>
-                                            <td><?php echo $row['payment']?></td>
+                                            <td>₱ <?php echo $row['payment']?></td>
                                         </tr>
                                         <?php endforeach;?>
                                     </tbody>
