@@ -1,3 +1,7 @@
+<?php
+include 'db_connection.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -6,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Homepage</title>
+        <title>Orders</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
@@ -23,7 +27,7 @@
 
             </a>
             <!-- Sidebar Toggle-->
-            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button> -->
             <!-- Navbar Search-->
            
             <!-- Navbar-->
@@ -71,7 +75,6 @@
                             </a>
                             
                             </a>
-                            </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="layout-static.html">Static Navigation</a>
@@ -111,93 +114,120 @@
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Start Bootstrap
+                        Admin
                     </div>
                 </nav>
             </div>
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Good Afternoon, Admin</h1>
-                        <ol class="breadcrumb mb-4">
-                            
-                        </ol>
-                        <div class="row">
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-primary text-white mb-4">
-                                    <div class="card-body" style="font-size: 25px;">Income
-                                        <ol class="breadcrumb">
-                            
-                                            $120,000
-                                        </ol>
-                                    </div>
-                                    
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-success text-white mb-4">
-                                    <div class="card-body" style="font-size: 25px;">New Orders
-                                        <ol class="breadcrumb">
-                                            25
-                                        </ol>
-                                    </div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="orders.html">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            
-
-                            
-                            </div>
-                            
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-area me-1"></i>
-                                        Sales
-                                    </div>
-                                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-area me-1"></i>
-                                        Expenses
-                                    </div>
-                                    <div class="card-body"><canvas id="Expenses" width="100%" height="40"></canvas></div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-area me-1"></i>
-                                        Income
-                                    </div>
-                                    <div class="card-body"><canvas id="income" width="100%" height="40"></canvas></div>
-                                </div>
-                            </div>
-                        </div>
+                        <h1 class="mt-4">Orders</h1>
+                       
+                        <a href="all_orders.html" class="btn btn-primary mb-4 mt-3 me-2">All</a>
+                        <a href="new_orders.html" class="btn btn-outline-primary mb-4 mt-3 ">New Orders</a>
+                        <a href="Enroute.html" class="btn btn-outline-primary mb-4 mt-3 ">Enroute</a>
+                        <a href="delivered.html" class="btn btn-outline-primary mb-4 mt-3 ">Delivered</a>
+                       
                         <div class="card mb-4">
                            
                             <div class="card-body">
-                               
-                                   
-                                    
-                                   
-                               
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Contact #</th>
+                                            <th>Address</th>
+                                            <th>Date</th>
+                                            <th>Quantity</th>
+                                            <th>Type</th>
+                                             <th>Status</th>
+                                             <th>Rider</th>
+                                             <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Contact #</th>
+                                            <th>Address</th>
+                                            <th>Date</th>
+                                            <th>Quantity</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th>Rider</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    <?php
+                                        $query = "SELECT * FROM orders";
+                                        $result = mysqli_query($conn, $query);
+
+                                        if (mysqli_num_rows($result) > 0) {
+                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                echo 
+                                                "<tr>
+                                                    <td>{$row['name']}</td>
+                                                        <td>{$row['contact_number']}</td>
+                                                        <td>{$row['address']}</td>
+                                                        <td>{$row['date']}</td>
+                                                        <td>{$row['quantity']}</td>
+                                                        <td>{$row['type']}</td>
+                                                        <td>{$row['status']}</td>
+                                                        <td>{$row['rider']}</td>
+                                                        <td class='text-center align-middle'>
+                                                            <a href='edit_order.php?id={$row['id']}'><img src='icons/check.png' width='20' height='20' class='mx-auto d-block'></a>
+                                                    </td>
+                                                </tr>";
+                                                }
+                                            } else {
+                                                echo "<tr><td colspan='9' class='text-center'>No orders found</td></tr>";
+                                            }
+
+                                            mysqli_close($conn);
+                                            ?>
+                                        <tr>
+                                            <td>Klent Jylwen Garingers Jr.</td>
+                                            <td>094697998891</td>
+                                            <td>Pasong Putik Propper</td>
+                                            <td>3/14/25</td>
+                                            <td>10</td>
+                                            <td>With Faucet</td>
+                                            <td>Enroute</td>
+                                            <td>Zach</td>
+                                            <td class="text-center align-middle">
+                                                <img src="icons/check.png" width="20" height="20" class="mx-auto d-block">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Klent Jylwen Garingers Jr.</td>
+                                            <td>094697998891</td>
+                                            <td>Pasong Putik Propper</td>
+                                            <td>3/14/25</td>
+                                            <td>10</td>
+                                            <td>With Faucet</td>
+                                            <td>New</td>
+                                            <td>Zach</td>
+                                            <td class="text-center align-middle">
+                                                <img src="icons/check.png" width="20" height="20" class="mx-auto d-block">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Klent Jylwen Garingers Jr.</td>
+                                            <td>094697998891</td>
+                                            <td>Pasong Putik Propper</td>
+                                            <td>3/14/25</td>
+                                            <td>10</td>
+                                            <td>With Faucet</td>
+                                            <td>Delivered</td>
+                                            <td>Zach</td>
+                                            <td class="text-center align-middle">
+                                                <img src="icons/check.png" width="20" height="20" class="mx-auto d-block">
+                                            </td>
+                                        </tr>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
