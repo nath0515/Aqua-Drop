@@ -69,7 +69,7 @@
                                 Stock
                             </a>
 
-                            <a class="nav-link" href="sales.php">
+                            <a class="nav-link" href="sales.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Sales
                             </a>
@@ -132,13 +132,12 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" ><i class="bi bi-filter-circle-fill fs-2"></i></a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="orders.php">All</a></li>
-                                    <li><a class="dropdown-item" href="pending.php">Pending</a></li>
-                                    <li><a class="dropdown-item" href="accepted.php">Accepted</a></li>
-                                    <li><a class="dropdown-item" href="processing.php">Processing</a></li>
-                                    <li><a class="dropdown-item" href="delivering.php">Delivering</a></li>
-                                    <li><a class="dropdown-item" href="completed.php">Completed</a></li>
-                                    <li><a class="dropdown-item" href="cancelled.php">Cancelled</a></li>
+                                    <li><a class="dropdown-item" href="#!">Pending</a></li>
+                                    <li><a class="dropdown-item" href="#!">Accepted</a></li>
+                                    <li><a class="dropdown-item" href="#!">Processing</a></li>
+                                    <li><a class="dropdown-item" href="#!">Delivering</a></li>
+                                    <li><a class="dropdown-item" href="#!">Completed</a></li>
+                                    <li><a class="dropdown-item" href="#!">Cancelled</a></li>
                                 </ul>
                             </li>
                         </ul>

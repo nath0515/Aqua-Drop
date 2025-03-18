@@ -16,10 +16,32 @@
 
       if (password_verify($password, $user['password'])) {
         $_SESSION['username'] = $username;
-        $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['user_id'] = $user['Id'];
         $_SESSION['loggedin'] = true;
-        header("Location: index.php");
-        exit();
+
+        //check role
+        $sql = "SELECT role_id FROM userdetails WHERE userid = :userid";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':userid', $user['Id']);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $role_id = $result['role_id'];
+        
+        //put into session
+        $_SESSION['role_id'] = $role_id;
+        if($role_id == 1){
+            header("Location: index.html");
+            exit();
+        }
+        else if($role_id == 2){
+            header("Location: index.php");
+            exit();
+        }
+        else{
+            header("Location: asdasdasd.php");
+            exit();
+        }
+        
       }
       else {
         $error_message = "Invalid password.";

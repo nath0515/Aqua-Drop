@@ -1,4 +1,13 @@
-<!DOCTYPE html>
+<?php 
+	require ('session.php');
+	require ('db.php');
+
+	$sql = "SELECT * FROM orders";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -117,12 +126,22 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Sales</h1>
+                        <h1 class="mt-4">Orders</h1>
                        
-                        <a href="week_sales.html" class="btn btn-primary mb-4 mt-3 me-2">Week</a>
-                        <a href="month_sales.html" class="btn btn-outline-primary mb-4 mt-3 me-2 ">Month</a>
-                        <a href="year_sales.html" class="btn btn-outline-primary mb-4 mt-3 me-2">Year</a>
-                        
+                        <ul class="navbar-nav ms-auto  me-3 me-lg-4">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" ><i class="bi bi-filter-circle-fill fs-2"></i></a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="orders.php">All</a></li>
+                                    <li><a class="dropdown-item" href="pending.php">Pending</a></li>
+                                    <li><a class="dropdown-item" href="accepted.php">Accepted</a></li>
+                                    <li><a class="dropdown-item" href="processing.php">Processing</a></li>
+                                    <li><a class="dropdown-item" href="delivering.php">Delivering</a></li>
+                                    <li><a class="dropdown-item" href="completed.php">Completed</a></li>
+                                    <li><a class="dropdown-item" href="cancelled.php">Cancelled</a></li>
+                                </ul>
+                            </li>
+                        </ul>
                        
                         <div class="card mb-4">
                            
@@ -131,30 +150,46 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
+                                            <th>Contact #</th>
+                                            <th>Address</th>
+                                            <th>Date</th>
                                             <th>Quantity</th>
                                             <th>Type</th>
-                                            <th>Payment</th>
-                                           
+                                             <th>Status</th>
+                                             <th>Rider</th>
+                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th>Name</th>
+                                            <th>Contact #</th>
+                                            <th>Address</th>
+                                            <th>Date</th>
                                             <th>Quantity</th>
                                             <th>Type</th>
-                                            <th>Payment</th>
+                                            <th>Status</th>
+                                            <th>Rider</th>
+                                            <th>Action</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
+                                        <?php foreach($data as $row): ?>
                                         <tr>
-                                            <td>Tiger Nixon</td>
-                                            <td>10</td>
-                                            <td>Without Faucet</td>
-                                            <td>250</td>
+                                            <td><?php echo $row['name']?></td>
+                                            <td><?php echo $row['contact_number']?></td>
+                                            <td><?php echo $row['address']?></td>
+                                            <td><?php echo $row['date']?></td>
+                                            <td><?php echo $row['quantity']?></td>
+                                            <td><?php echo $row['type_id']?></td>
+                                            <td><?php echo $row['status_id']?></td>
+                                            <td><?php echo $row['rider']?></td>
+                                            <td class="text-center align-middle">
+                                                <img src="icons/check.png" width="20" height="20" class="mx-auto d-block">
+                                            </td>
                                             
                                         </tr>
-                                        
-                                        
+                                        <?php endforeach;?>
                                     </tbody>
                                 </table>
                             </div>
