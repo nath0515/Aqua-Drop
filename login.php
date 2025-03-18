@@ -50,7 +50,7 @@
     else {
       $error_message = "No user found with that username.";
     }
-  }
+  }//
 ?>
 
 <!DOCTYPE html>
