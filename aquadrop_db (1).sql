@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 18, 2025 at 05:08 PM
+-- Generation Time: Mar 19, 2025 at 03:00 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `expenses` (
   `purpose` varchar(255) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   PRIMARY KEY (`expense_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `expenses`
@@ -45,7 +45,10 @@ CREATE TABLE IF NOT EXISTS `expenses` (
 INSERT INTO `expenses` (`expense_id`, `expense`, `date`, `purpose`, `amount`) VALUES
 (1, 'ahkjdwfgd awd', '2025-03-18 09:40:08', 'sdaegdasfwaf', 201.00),
 (2, 'Tricycle', '2025-03-18 13:22:49', 'Flat Tire', 1000.00),
-(3, 'Filter', '2025-03-19 14:49:33', 'Change Filter', 30000.00);
+(3, 'Filter', '2025-03-19 14:49:33', 'Change Filter', 30000.00),
+(4, 'staff', '2025-03-19 12:26:36', 'salary', 1000.00),
+(5, 'staff', '2025-03-19 12:26:41', 'salary', 1000.00),
+(6, 'staff', '2025-03-19 12:37:25', 'meryenda', 200.00);
 
 -- --------------------------------------------------------
 
@@ -60,6 +63,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `address` varchar(255) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `quantity` int(11) NOT NULL,
+  `payment` decimal(10,2) NOT NULL,
   `type_id` int(11) NOT NULL,
   `status_id` int(11) NOT NULL,
   `rider` varchar(255) NOT NULL,
@@ -70,9 +74,9 @@ CREATE TABLE IF NOT EXISTS `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`order_id`, `name`, `contact_number`, `address`, `date`, `quantity`, `type_id`, `status_id`, `rider`) VALUES
-(1, 'Jonathan Garinga', '09327572991', 'awdawfdaw', '2025-03-18 07:56:08', 5, 0, 1, 'Klent Sylwen Pobadora'),
-(2, 'jonathan 2', '09123568974', 'qwadafgefa', '2025-03-18 07:56:18', 2, 1, 2, 'Zachary Co Sam');
+INSERT INTO `orders` (`order_id`, `name`, `contact_number`, `address`, `date`, `quantity`, `payment`, `type_id`, `status_id`, `rider`) VALUES
+(1, 'Jonathan Garinga', '09327572991', 'awdawfdaw', '2025-03-19 12:47:56', 5, 0.00, 2, 1, 'Klent Sylwen Pobadora'),
+(2, 'jonathan 2', '09123568974', 'qwadafgefa', '2025-03-18 07:56:18', 2, 0.00, 1, 2, 'Zachary Co Sam');
 
 -- --------------------------------------------------------
 
