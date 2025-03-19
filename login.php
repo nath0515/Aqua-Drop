@@ -30,7 +30,7 @@
         //put into session
         $_SESSION['role_id'] = $role_id;
         if($role_id == 1){
-            header("Location: index.html");
+            header("Location: adminindex.php.");
             exit();
         }
         else if($role_id == 2){

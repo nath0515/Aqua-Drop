@@ -2,7 +2,9 @@
 	require ('session.php');
 	require ('db.php');
 
-	$sql = "SELECT * FROM orders";
+	$sql = "SELECT order_id, name, contact_number, address, date, quantity, payment, rider, status_name, type_name FROM orders o
+    JOIN status s ON o.status_id = s.status_id
+    JOIN type t ON o.type_id = t.type_id";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -25,7 +27,7 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">
+            <a class="navbar-brand ps-3" href="adminindex.php">
 
 
                 <img src="icons/transparentlogo.png" style="width: 200px; height: 150px;">
@@ -54,12 +56,12 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav align-items-center">
                          
-                            <a class="nav-link" href="index.html">
+                            <a class="nav-link" href="adminindex.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Home
                             </a>
                            
-                            <a class="nav-link" href="orders.html">
+                            <a class="nav-link" href="orders.php">
                                 <div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i></div>
                                 Orders
                             </a>
@@ -154,6 +156,7 @@
                                             <th>Address</th>
                                             <th>Date</th>
                                             <th>Quantity</th>
+                                            <th>Payment</th>
                                             <th>Type</th>
                                              <th>Status</th>
                                              <th>Rider</th>
@@ -167,6 +170,7 @@
                                             <th>Address</th>
                                             <th>Date</th>
                                             <th>Quantity</th>
+                                            <th>Payment</th>
                                             <th>Type</th>
                                             <th>Status</th>
                                             <th>Rider</th>
@@ -175,19 +179,21 @@
                                     </tfoot>
                                     <tbody>
                                         <?php foreach($data as $row): ?>
-                                        <tr>
+                                        <tr data-id="<?php echo $row['order_id']?>">
                                             <td><?php echo $row['name']?></td>
                                             <td><?php echo $row['contact_number']?></td>
                                             <td><?php echo $row['address']?></td>
                                             <td><?php echo $row['date']?></td>
                                             <td><?php echo $row['quantity']?></td>
-                                            <td><?php echo $row['type_id']?></td>
-                                            <td><?php echo $row['status_id']?></td>
+                                            <td><?php echo $row['payment']?></td>
+                                            <td><?php echo $row['type_name']?></td>
+                                            <td><?php echo $row['status_name']?></td>
                                             <td><?php echo $row['rider']?></td>
                                             <td class="text-center align-middle">
-                                                <img src="icons/check.png" width="20" height="20" class="mx-auto d-block">
-                                            </td>
-                                            
+                                                <button type='button' class='btn btn-outline-primary btn-lg' data-bs-toggle='modal' data-bs-target='#editstatus' title='Edit Task'>
+                                                        <i class='fa fa-edit'></i>
+                                                </button>
+                                            </td> 
                                         </tr>
                                         <?php endforeach;?>
                                     </tbody>
@@ -199,6 +205,48 @@
 
             </div>
         </div>
+        <!-- Modal Structure -->
+        <div class="modal fade" id="editstatus" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-plus-circle"></i>Edit Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <form action="process_addexpense.php" method="POST">
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <?php 
+                                    $sql = "SELECT * FROM status";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->execute();
+                                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                
+                                ?>
+                                <select class="form-select" name="status_id" required>
+                                    <option value="">Select Status</option>
+                                    <?php foreach($data as $row):?>
+                                    <option value="<?php echo $row['status_id']?>" id="editstatus"><?php echo $row['status_name']?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
@@ -206,5 +254,7 @@
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="js/datatables-simple-demo.js"></script>
+
+        
     </body>
 </html>

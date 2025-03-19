@@ -30,7 +30,7 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">
+            <a class="navbar-brand ps-3" href="adminindex.php">
 
 
                 <img src="icons/transparentlogo.png" style="width: 200px; height: 150px;">
@@ -58,13 +58,12 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav align-items-center">
-                         
-                            <a class="nav-link" href="index.html">
+                            <a class="nav-link" href="adminindex.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Home
                             </a>
                            
-                            <a class="nav-link" href="orders.html">
+                            <a class="nav-link" href="orders.php">
                                 <div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i></div>
                                 Orders
                             </a>
@@ -74,12 +73,12 @@
                                 Stock
                             </a>
 
-                            <a class="nav-link" href="sales.html">
+                            <a class="nav-link" href="sales.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Sales
                             </a>
 
-                             <a class="nav-link" href="expenses.html">
+                             <a class="nav-link" href="expenses.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Expenses
                             </a>
@@ -124,18 +123,31 @@
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Admin
+                        <?php echo $_SESSION['username'];?>
                     </div>
                 </nav>
             </div>
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Expenses: ₱ <?php echo number_format($total_amount, 2); ?></h1>
-                       
-                        <ul class="navbar-nav ms-auto  me-3 me-lg-4">
+                        <div class="row">
+                            <div class="col-10">
+                                <h1 class="mt-4">Expenses: ₱ <?php echo number_format($total_amount, 2); ?></h1>
+                            </div>
+                            <div class="col-2 d-flex align-items-center">
+                                <button class="btn btn-outline-secondary mt-3 ms-5" data-bs-toggle="modal" data-bs-target="#addexpenses"><i class="bi bi-plus-circle"></i>
+                                    Open Modal
+                                </button>
+                            </div>
+
+                        </div>
+                        
+                        
+                        <ul class="navbar-nav ms-auto me-3 me-lg-4 d-flex align-items-">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" ><i class="bi bi-filter-circle-fill fs-2"></i></a>
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-filter-circle-fill fs-2"></i>
+                                </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item" href="expenses.php">All</a></li>
                                     <li><a class="dropdown-item" href="week_expenses.php">Week</a></li>
@@ -183,12 +195,78 @@
 
             </div>
         </div>
+
+        <!-- Modal Structure -->
+        <div class="modal fade" id="addexpenses" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-plus-circle"></i>Add Expenses</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <form action="process_addexpense.php" method="POST">
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-receipt"></i></span>
+                                <input type="text" name="expense" class="form-control" placeholder="Expense" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                <input type="text" name="purpose" class="form-control" placeholder="Purpose" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text pe-3">₱</span>
+                                <input type="number" step="0.01" name="amount" value="0.00" class="form-control" placeholder="Amount" required>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add Expense</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <script src="assets/demo/chart-area-demo.js"></script>
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="js/datatables-simple-demo.js"></script>
+
+        <?php if (isset($_GET['status'])): ?>
+        <script>
+            <?php if ($_GET['status'] == 'success'): ?>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Expense Added!',
+                    text: 'The expense has been successfully added.',
+                }).then((result) => {
+                });
+            <?php elseif ($_GET['status'] == 'error'): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong while adding the expense.',
+                });
+            <?php endif; ?>
+        </script>
+    <?php endif; ?>
     </body>
+    
 </html>
