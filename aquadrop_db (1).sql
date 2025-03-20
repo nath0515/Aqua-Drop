@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 19, 2025 at 03:00 PM
+-- Generation Time: Mar 20, 2025 at 05:48 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -31,24 +31,48 @@ USE `aquadrop_db`;
 
 CREATE TABLE IF NOT EXISTS `expenses` (
   `expense_id` int(11) NOT NULL AUTO_INCREMENT,
-  `expense` varchar(255) NOT NULL,
+  `expenses_id` int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `purpose` varchar(255) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   PRIMARY KEY (`expense_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `expenses`
 --
 
-INSERT INTO `expenses` (`expense_id`, `expense`, `date`, `purpose`, `amount`) VALUES
-(1, 'ahkjdwfgd awd', '2025-03-18 09:40:08', 'sdaegdasfwaf', 201.00),
-(2, 'Tricycle', '2025-03-18 13:22:49', 'Flat Tire', 1000.00),
-(3, 'Filter', '2025-03-19 14:49:33', 'Change Filter', 30000.00),
-(4, 'staff', '2025-03-19 12:26:36', 'salary', 1000.00),
-(5, 'staff', '2025-03-19 12:26:41', 'salary', 1000.00),
-(6, 'staff', '2025-03-19 12:37:25', 'meryenda', 200.00);
+INSERT INTO `expenses` (`expense_id`, `expenses_id`, `date`, `purpose`, `amount`) VALUES
+(1, 1, '2025-03-20 09:57:02', 'sdaegdasfwaf', 201.00),
+(2, 2, '2026-03-20 09:57:08', 'Flat Tire', 1000.00),
+(3, 3, '2025-03-20 09:57:11', 'Change Filter', 30000.00),
+(4, 1, '2025-03-20 09:57:14', 'salary', 1000.00),
+(5, 2, '2025-03-20 09:57:17', 'salary', 1000.00),
+(6, 3, '2025-03-20 09:57:21', 'meryenda', 200.00),
+(7, 1, '2025-03-20 09:57:23', 'sadwrffwa', 200.00),
+(8, 2, '2025-03-20 09:57:26', 'adsadnnananw1212', 300.00),
+(9, 1, '2025-03-20 10:00:55', 'safsdf', 300.00);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `expense_type`
+--
+
+CREATE TABLE IF NOT EXISTS `expense_type` (
+  `expenses_id` int(11) NOT NULL AUTO_INCREMENT,
+  `expense_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`expenses_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `expense_type`
+--
+
+INSERT INTO `expense_type` (`expenses_id`, `expense_name`) VALUES
+(1, 'Salary'),
+(2, 'Pump Filter'),
+(3, 'Adding of Gallons');
 
 -- --------------------------------------------------------
 
@@ -75,8 +99,8 @@ CREATE TABLE IF NOT EXISTS `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `name`, `contact_number`, `address`, `date`, `quantity`, `payment`, `type_id`, `status_id`, `rider`) VALUES
-(1, 'Jonathan Garinga', '09327572991', 'awdawfdaw', '2025-03-19 12:47:56', 5, 0.00, 2, 1, 'Klent Sylwen Pobadora'),
-(2, 'jonathan 2', '09123568974', 'qwadafgefa', '2025-03-18 07:56:18', 2, 0.00, 1, 2, 'Zachary Co Sam');
+(1, 'Jonathan Garinga', '09327572991', 'awdawfdaw', '2025-03-20 13:54:27', 5, 420.69, 2, 4, 'Klent Sylwen Pobadora'),
+(2, 'jonathan 2', '09123568974', 'qwadafgefa', '2025-03-20 10:31:29', 2, 0.00, 1, 4, 'Zachary Co Sam');
 
 -- --------------------------------------------------------
 
@@ -144,10 +168,9 @@ CREATE TABLE IF NOT EXISTS `status` (
 INSERT INTO `status` (`status_id`, `status_name`) VALUES
 (1, 'Pending'),
 (2, 'Accepted'),
-(3, 'Processing'),
-(4, 'Delivering'),
-(5, 'Completed'),
-(6, 'Cancelled');
+(3, 'Delivering'),
+(4, 'Completed'),
+(5, 'Cancelled');
 
 -- --------------------------------------------------------
 
@@ -158,6 +181,7 @@ INSERT INTO `status` (`status_id`, `status_name`) VALUES
 CREATE TABLE IF NOT EXISTS `type` (
   `type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(255) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
   PRIMARY KEY (`type_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -165,9 +189,9 @@ CREATE TABLE IF NOT EXISTS `type` (
 -- Dumping data for table `type`
 --
 
-INSERT INTO `type` (`type_id`, `type_name`) VALUES
-(1, 'Jug with Faucet'),
-(2, 'Round Gallon');
+INSERT INTO `type` (`type_id`, `type_name`, `price`) VALUES
+(1, 'Jug with Faucet 20 liters ₱ 25.00', 25.00),
+(2, 'Round Gallon 20 liters ₱ 25.00', 25.00);
 
 -- --------------------------------------------------------
 
