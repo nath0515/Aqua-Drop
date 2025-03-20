@@ -2,12 +2,27 @@
 	require ('session.php');
 	require ('db.php');
 
-	$sql = "SELECT order_id, name, contact_number, address, date, quantity, payment, rider, status_name, type_name FROM orders o
-    JOIN status s ON o.status_id = s.status_id
-    JOIN type t ON o.type_id = t.type_id";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sql = "";
+    if(isset($_GET['id'])){
+        $sql = "SELECT order_id, name, contact_number, address, date, quantity, payment, rider, o.status_id, status_name, type_name FROM orders o
+        JOIN status s ON o.status_id = s.status_id
+        JOIN type t ON o.type_id = t.type_id
+        WHERE o.status_id = :status_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':status_id', $_GET['id']);
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    else{
+        $sql = "SELECT order_id, name, contact_number, address, date, quantity, payment, rider, o.status_id, status_name, type_name FROM orders o
+        JOIN status s ON o.status_id = s.status_id
+        JOIN type t ON o.type_id = t.type_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+	
 
 ?>
 <html lang="en">
@@ -135,12 +150,11 @@
                                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" ><i class="bi bi-filter-circle-fill fs-2"></i></a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item" href="orders.php">All</a></li>
-                                    <li><a class="dropdown-item" href="pending.php">Pending</a></li>
-                                    <li><a class="dropdown-item" href="accepted.php">Accepted</a></li>
-                                    <li><a class="dropdown-item" href="processing.php">Processing</a></li>
-                                    <li><a class="dropdown-item" href="delivering.php">Delivering</a></li>
-                                    <li><a class="dropdown-item" href="completed.php">Completed</a></li>
-                                    <li><a class="dropdown-item" href="cancelled.php">Cancelled</a></li>
+                                    <li><a class="dropdown-item" href="orders.php?id=1">Pending</a></li>
+                                    <li><a class="dropdown-item" href="orders.php?id=2">Accepted</a></li>
+                                    <li><a class="dropdown-item" href="orders.php?id=3">Delivering</a></li>
+                                    <li><a class="dropdown-item" href="orders.php?id=4">Completed</a></li>
+                                    <li><a class="dropdown-item" href="orders.php?id=5">Cancelled</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -190,7 +204,7 @@
                                             <td><?php echo $row['status_name']?></td>
                                             <td><?php echo $row['rider']?></td>
                                             <td class="text-center align-middle">
-                                                <button type='button' class='btn btn-outline-primary btn-lg' data-bs-toggle='modal' data-bs-target='#editstatus' title='Edit Task'>
+                                                <button type='button' class='btn btn-outline-primary btn-lg' data-bs-toggle='modal' data-order-id='<?php echo $row['order_id']?>' data-id='<?php echo $row['status_id']?>' data-bs-target='#editstatus' title='Edit Task'>
                                                         <i class='fa fa-edit'></i>
                                                 </button>
                                             </td> 
@@ -216,7 +230,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 
-                <form action="process_addexpense.php" method="POST">
+                <form action="process_addorder.php" method="POST">
                     <!-- Modal Body -->
                     <div class="modal-body">
                         <div class="mb-3">
@@ -228,7 +242,7 @@
                                     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 
                                 ?>
-                                <select class="form-select" name="status_id" required>
+                                <select class="form-select" name="status_id" id="editstatusid" required>
                                     <option value="">Select Status</option>
                                     <?php foreach($data as $row):?>
                                     <option value="<?php echo $row['status_id']?>" id="editstatus"><?php echo $row['status_name']?></option>
@@ -237,6 +251,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="text" name="order_id" id="editorderid" hidden>
                     <!-- Modal Footer -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -254,6 +269,38 @@
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="js/datatables-simple-demo.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            $('#editstatus').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var statusId = button.data('id');
+                var orderId = button.data('order-id');
+                document.getElementById("editstatusid").value = statusId;
+                document.getElementById("editorderid").value = orderId;
+            });
+
+        </script>
+
+    <?php if (isset($_GET['status'])): ?>
+        <script>
+            <?php if ($_GET['status'] == 'success'): ?>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Order Updated!',
+                    text: 'The order has been successfully updated.',
+                }).then((result) => {
+                });
+            <?php elseif ($_GET['status'] == 'error'): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong while editing the order.',
+                });
+            <?php endif; ?>
+        </script>
+    <?php endif; ?>
 
         
     </body>

@@ -2,15 +2,47 @@
 	require ('session.php');
 	require ('db.php');
 
-	$sql = "SELECT * FROM expenses";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
+        $start_date = $_GET['start_date'];
+        $end_date = $_GET['end_date'];
 
-    $sql_total_amount = "SELECT SUM(amount) AS total_amount FROM expenses";
-    $stmt_total_amount = $conn->prepare($sql_total_amount);
-    $stmt_total_amount->execute();
-    $total_amount = $stmt_total_amount->fetch(PDO::FETCH_ASSOC)['total_amount'];
+        if (validateDate($start_date) && validateDate($end_date)) {
+            $start_datetime = $start_date . ' 00:00:00';
+            $end_datetime = $end_date . ' 23:59:59';
+
+            $sql = "SELECT * FROM expenses e1 JOIN expense_type e2 ON e1.expenses_id = e2.expenses_id WHERE date BETWEEN :start_date AND :end_date";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':start_date', $start_datetime, PDO::PARAM_STR);
+            $stmt->bindParam(':end_date', $end_datetime, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $sql_total_amount = "SELECT SUM(amount) AS total_amount FROM expenses WHERE date BETWEEN :start_date AND :end_date";
+            $stmt_total_amount = $conn->prepare($sql_total_amount);
+            $stmt_total_amount->bindParam(':start_date', $start_datetime, PDO::PARAM_STR);
+            $stmt_total_amount->bindParam(':end_date', $end_datetime, PDO::PARAM_STR);
+            $stmt_total_amount->execute();
+            $total_amount = $stmt_total_amount->fetch(PDO::FETCH_ASSOC)['total_amount'];
+        }
+    }
+    else{
+        $sql = "SELECT * FROM expenses e1 JOIN expense_type e2 ON e1.expenses_id = e2.expenses_id ";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $sql_total_amount = "SELECT SUM(amount) AS total_amount FROM expenses";
+        $stmt_total_amount = $conn->prepare($sql_total_amount);
+        $stmt_total_amount->execute();
+        $total_amount = $stmt_total_amount->fetch(PDO::FETCH_ASSOC)['total_amount'];
+    }
+
+    function validateDate($date) {
+        $d = DateTime::createFromFormat('Y-m-d', $date);
+        return $d && $d->format('Y-m-d') === $date;
+    }
 
 ?>
 <html lang="en">
@@ -139,24 +171,27 @@
                                     Open Modal
                                 </button>
                             </div>
-
-                        </div>
-                        
-                        
+                        </div>  
                         <ul class="navbar-nav ms-auto me-3 me-lg-4 d-flex align-items-">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-filter-circle-fill fs-2"></i>
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-filter-circle-fill fs-2"></i> Filter by Date Range
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="expenses.php">All</a></li>
-                                    <li><a class="dropdown-item" href="week_expenses.php">Week</a></li>
-                                    <li><a class="dropdown-item" href="month_expenses.php">Month</a></li>
-                                    <li><a class="dropdown-item" href="year_expenses.php">Year</a></li>
-                                </ul>
+                                <div class="dropdown-menu p-4" aria-labelledby="navbarDropdown">
+                                    <form action="expenses.php" method="GET">
+                                        <div class="mb-3">
+                                            <label for="start_date" class="form-label">Start Date</label>
+                                            <input type="date" id="start_date" name="start_date" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="end_date" class="form-label">End Date</label>
+                                            <input type="date" id="end_date" name="end_date" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Filter</button>
+                                    </form>
+                                </div>
                             </li>
                         </ul>
-                       
                         <div class="card mb-4">
                            
                             <div class="card-body">
@@ -180,7 +215,7 @@
                                     <tbody>
                                         <?php foreach($data as $row): ?>
                                         <tr>
-                                            <td><?php echo $row['expense']?></td>
+                                            <td><?php echo $row['expense_name']?></td>
                                             <td><?php echo $row['date']?></td>
                                             <td><?php echo $row['purpose']?></td>
                                             <td>₱ <?php echo $row['amount']?></td>
@@ -195,8 +230,8 @@
 
             </div>
         </div>
-
-        <!-- Modal Structure -->
+        </div>
+         <!-- Modal Structure -->
         <div class="modal fade" id="addexpenses" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -212,14 +247,25 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-receipt"></i></span>
-                                <input type="text" name="expense" class="form-control" placeholder="Expense" required>
+                                <?php 
+                                    $sql = "SELECT * FROM expense_type";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->execute();
+                                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                
+                                ?>
+                                <select class="form-select" name="expenses_id" required>
+                                    <option value="">Select Expense</option>
+                                    <?php foreach($data as $row):?>
+                                    <option value="<?php echo $row['expenses_id']?>"><?php echo $row['expense_name']?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                         </div>
                         <div class="mb-3">
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                <input type="text" name="purpose" class="form-control" placeholder="Purpose" required>
+                                <span class="input-group-text"><i class="bi bi-receipt"></i></span>
+                                <input type="text" name="purpose" class="form-control" placeholder="Comment" required>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -238,8 +284,6 @@
                 </form>
 
             </div>
-        </div>
-        </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -250,23 +294,57 @@
         <script src="js/datatables-simple-demo.js"></script>
 
         <?php if (isset($_GET['status'])): ?>
+            <script>
+                <?php if ($_GET['status'] == 'success'): ?>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Expense Added!',
+                        text: 'The expense has been successfully added.',
+                    }).then((result) => {
+                    });
+                <?php elseif ($_GET['status'] == 'error'): ?>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong while adding the expense.',
+                    });
+                <?php endif; ?>
+            </script>
+        <?php endif; ?>
+
         <script>
-            <?php if ($_GET['status'] == 'success'): ?>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Expense Added!',
-                    text: 'The expense has been successfully added.',
-                }).then((result) => {
+        $(document).ready(function() {
+            var table = $('#datatablesSimple').DataTable();
+
+            $("#start_date, #end_date").datepicker({
+                dateFormat: "yy-mm-dd"
+            });
+
+            // Date range filter
+            $('#start_date, #end_date').change(function() {
+                var startDate = $('#start_date').val();
+                var endDate = $('#end_date').val();
+
+                table.rows().every(function() {
+                    var date = $(this.node()).find('td').eq(2).text(); // Get the date from the 3rd column (index 2)
+
+                    if (startDate && endDate) {
+                        if (new Date(date) >= new Date(startDate) && new Date(date) <= new Date(endDate)) {
+                            $(this.node()).show();
+                        } else {
+                            $(this.node()).hide();
+                        }
+                    } else if (startDate && new Date(date) >= new Date(startDate)) {
+                        $(this.node()).show();
+                    } else if (endDate && new Date(date) <= new Date(endDate)) {
+                        $(this.node()).show();
+                    } else {
+                        $(this.node()).show();
+                    }
                 });
-            <?php elseif ($_GET['status'] == 'error'): ?>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong while adding the expense.',
-                });
-            <?php endif; ?>
-        </script>
-    <?php endif; ?>
+            });
+        });
+    </script>
     </body>
     
 </html>

@@ -2,15 +2,53 @@
 	require ('session.php');
 	require ('db.php');
 
-	$sql = "SELECT * FROM sales";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
+        $start_date = $_GET['start_date'];
+        $end_date = $_GET['end_date'];
 
-    $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM sales";
-    $stmt_total_payment = $conn->prepare($sql_total_payment);
-    $stmt_total_payment->execute();
-    $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
+        if (validateDate($start_date) && validateDate($end_date)) {
+            $start_datetime = $start_date . ' 00:00:00';
+            $end_datetime = $end_date . ' 23:59:59';
+
+            $sql = "SELECT order_id, name, contact_number, address, date, quantity, t.price, (o.quantity * t.price) AS total_price, payment, rider, o.status_id, status_name, type_name FROM orders o
+            JOIN status s ON o.status_id = s.status_id
+            JOIN type t ON o.type_id = t.type_id WHERE date BETWEEN :start_date AND :end_date AND o.status_id = 4";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':start_date', $start_datetime, PDO::PARAM_STR);
+            $stmt->bindParam(':end_date', $end_datetime, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM orders WHERE date BETWEEN :start_date AND :end_date AND status_id = 4";
+            $stmt_total_payment = $conn->prepare($sql_total_payment);
+            $stmt_total_payment->bindParam(':start_date', $start_datetime, PDO::PARAM_STR);
+            $stmt_total_payment->bindParam(':end_date', $end_datetime, PDO::PARAM_STR);
+            $stmt_total_payment->execute();
+            $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
+        }
+    }
+    else{
+        $sql = "SELECT order_id, name, contact_number, address, date, quantity,price, (o.quantity * t.price) AS total_price,payment, rider, o.status_id, status_name, type_name FROM orders o
+        JOIN status s ON o.status_id = s.status_id
+        JOIN type t ON o.type_id = t.type_id
+        WHERE o.status_id = 4";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM orders WHERE status_id = 4";
+        $stmt_total_payment = $conn->prepare($sql_total_payment);
+        $stmt_total_payment->execute();
+        $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
+    }
+	
+    function validateDate($date) {
+        $d = DateTime::createFromFormat('Y-m-d', $date);
+        return $d && $d->format('Y-m-d') === $date;
+    }
+    
 
 ?>
 <html lang="en">
@@ -131,50 +169,72 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Sales : ₱ <?php echo number_format($total_payment, 2); ?></h1>
-                       
-                        <ul class="navbar-nav ms-auto  me-3 me-lg-4">
+                        <h1 class="mt-4">Sales : ₱ <?php echo number_format($total_payment, 2); ?></h1>                      
+                        <ul class="navbar-nav ms-auto me-3 me-lg-4 d-flex align-items-">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" ><i class="bi bi-filter-circle-fill fs-2"></i></a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="sales.php">All</a></li>
-                                    <li><a class="dropdown-item" href="week_sales.php">Week</a></li>
-                                    <li><a class="dropdown-item" href="month_sales.php">Month</a></li>
-                                    <li><a class="dropdown-item" href="year_sales.php">Year</a></li>
-                                </ul>
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-filter-circle-fill fs-2"></i> Filter by Date Range
+                                </a>
+                                <div class="dropdown-menu p-4" aria-labelledby="navbarDropdown">
+                                    <form action="sales.php" method="GET">
+                                        <div class="mb-3">
+                                            <label for="start_date" class="form-label">Start Date</label>
+                                            <input type="date" id="start_date" name="start_date" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="end_date" class="form-label">End Date</label>
+                                            <input type="date" id="end_date" name="end_date" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Filter</button>
+                                    </form>
+                                </div>
                             </li>
-                        </ul>
-                       
+                        </ul>                       
                         <div class="card mb-4">
                            
                             <div class="card-body">
                                 <table id="datatablesSimple">
-                                    <thead>
+                                <thead>
                                         <tr>
                                             <th>Name</th>
+                                            <th>Contact #</th>
+                                            <th>Address</th>
                                             <th>Date</th>
                                             <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Payment</th>
                                             <th>Type</th>
-                                            <th>Payment</th>    
+                                             <th>Status</th>
+                                             <th>Rider</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                             <th>Name</th>
+                                            <th>Contact #</th>
+                                            <th>Address</th>
                                             <th>Date</th>
                                             <th>Quantity</th>
-                                            <th>Type</th>
+                                            <th>Price</th>
                                             <th>Payment</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th>Rider</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <?php foreach($data as $row): ?>
                                         <tr>
                                             <td><?php echo $row['name']?></td>
+                                            <td><?php echo $row['contact_number']?></td>
+                                            <td><?php echo $row['address']?></td>
                                             <td><?php echo $row['date']?></td>
                                             <td><?php echo $row['quantity']?></td>
-                                            <td><?php echo $row['type_id']?></td>
-                                            <td>₱ <?php echo $row['payment']?></td>
+                                            <td><?php echo $row['price']?></td>
+                                            <td>₱ <?php echo $row['total_price']?></td>
+                                            <td><?php echo $row['type_name']?></td>
+                                            <td><?php echo $row['status_name']?></td>
+                                            <td><?php echo $row['rider']?></td>
                                         </tr>
                                         <?php endforeach;?>
                                     </tbody>

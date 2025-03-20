@@ -2,10 +2,23 @@
 	require ('session.php');
 	require ('db.php');
 
-	$sql = "SELECT * FROM expenses";
+    $currentYear = date('Y');
+    $currentWeek = date('W');
+    
+    $sql = "SELECT * FROM expenses WHERE YEAR(date) = :year AND WEEK(date, 1) = :week";
     $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':year', $currentYear);
+    $stmt->bindParam(':week', $currentWeek);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Calculate total amount for the current week
+    $sql_total_amount = "SELECT SUM(amount) AS total_amount FROM expenses WHERE YEAR(date) = :year AND WEEK(date, 1) = :week";
+    $stmt_total_amount = $conn->prepare($sql_total_amount);
+    $stmt_total_amount->bindParam(':year', $currentYear);
+    $stmt_total_amount->bindParam(':week', $currentWeek);
+    $stmt_total_amount->execute();
+    $total_amount = $stmt_total_amount->fetch(PDO::FETCH_ASSOC)['total_amount'];
 
 ?>
 <html lang="en">

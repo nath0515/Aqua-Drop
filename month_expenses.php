@@ -2,11 +2,23 @@
 	require ('session.php');
 	require ('db.php');
 
-	$sql = "SELECT * FROM expenses";
+	$currentYear = date('Y');
+    $currentMonth = date('m');
+
+    $sql = "SELECT * FROM expenses WHERE YEAR(date) = :year AND MONTH(date) = :month";
     $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':year', $currentYear);
+    $stmt->bindParam(':month', $currentMonth);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Calculate total amount for the current month
+    $sql_total_amount = "SELECT SUM(amount) AS total_amount FROM expenses WHERE YEAR(date) = :year AND MONTH(date) = :month";
+    $stmt_total_amount = $conn->prepare($sql_total_amount);
+    $stmt_total_amount->bindParam(':year', $currentYear);
+    $stmt_total_amount->bindParam(':month', $currentMonth);
+    $stmt_total_amount->execute();
+    $total_amount = $stmt_total_amount->fetch(PDO::FETCH_ASSOC)['total_amount'];
 ?>
 <html lang="en">
     <head>

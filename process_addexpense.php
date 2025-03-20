@@ -5,14 +5,14 @@
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Get the form data
-    $expense = $_POST['expense'];
+    $expenses_id = $_POST['expenses_id'];
     $purpose = $_POST['purpose'];
     $amount = $_POST['amount'];
 
     try{
-        $sql_insert = "INSERT INTO expenses (expense, purpose, amount) VALUES (:expense, :purpose, :amount)";
+        $sql_insert = "INSERT INTO expenses (expenses_id, purpose, amount) VALUES (:expenses_id, :purpose, :amount)";
         $stmt = $conn->prepare($sql_insert);
-        $stmt->bindParam(':expense', $expense);
+        $stmt->bindParam(':expenses_id', $expenses_id);
         $stmt->bindParam(':purpose', $purpose);
         $stmt->bindParam(':amount', $amount);
         $stmt->execute();
