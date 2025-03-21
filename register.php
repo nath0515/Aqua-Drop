@@ -13,7 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
-<body class="bg-primary">
+<body class="bg-white">
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>
@@ -21,6 +21,7 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-7">
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
+                            <img src="icons/logo.png" alt="Logo" class="mb-2" style="width: 150px; height: auto; display: block; margin: 0 auto;">
                                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Account</h3></div>
                                 <div class="card-body">
                                     <form action="registeracc.php" method="POST">

@@ -50,7 +50,7 @@
     else {
       $error_message = "No user found with that username.";
     }
-  }//
+  }
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +65,7 @@
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
-<body class="bg-primary">
+<body class="bg-white">
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>
@@ -74,6 +74,7 @@
                         <div class="col-lg-5">
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
                                 <div class="card-header">
+                                <img src="icons/logo.png" alt="Logo" class="mb-2" style="width: 150px; height: auto; display: block; margin: 0 auto;">
                                     <h3 class="text-center font-weight-light my-4">Login</h3>
                                 </div>
                                 <div class="card-body">
