@@ -24,7 +24,7 @@
                             <img src="icons/logo.png" alt="Logo" class="mb-2" style="width: 150px; height: auto; display: block; margin: 0 auto;">
                                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Create Account</h3></div>
                                 <div class="card-body">
-                                    <form action="registeracc.php" method="POST">
+                                    <form action="process_register.php" method="POST">
                                         <div class="mb-3">
                                             <input type="text" name="username" class="form-control" placeholder="Username" required>
                                         </div>
@@ -54,7 +54,7 @@
                                         
                                         <div class="mb-3">
                                             <div class="input-group">
-                                                <input type="confirmpassword" name="confirmpassword" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                                                <input type="confirmpassword" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
                                                 <span class="input-group-text" onclick="togglePassword('confirmPassword', this)">
                                                     <i class="fa fa-eye"></i>
                                                 </span>
@@ -110,6 +110,12 @@
                     icon: 'error',
                     title: 'Oops...',
                     text: 'Something went wrong while creating the account.',
+                });
+            <?php elseif ($_GET['status'] == 'exist'): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Username already exists.',
                 });
             <?php elseif ($_GET['status'] == 'success'): ?>
                 Swal.fire({

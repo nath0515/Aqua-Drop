@@ -5,7 +5,7 @@
     include('db.php');
     $username = $_POST['username'];
     $password = $_POST['password'];
-
+    
     $sql = "SELECT * FROM users WHERE username = :username";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':username', $username);
@@ -30,7 +30,7 @@
         //put into session
         $_SESSION['role_id'] = $role_id;
         if($role_id == 1){
-            header("Location: adminindex.php.");
+            header("Location: adminindex.php");
             exit();
         }
         else if($role_id == 2){
@@ -83,7 +83,7 @@
                                             <span class="input-group-text">
                                                 <i class="fa fa-user"></i>
                                             </span>
-                                            <input type="text" name="username" class="form-control" placeholder="Email" required>
+                                            <input type="text" name="username" class="form-control" placeholder="Username" required>
                                         </div>
 
                                         <div class="mb-3 input-group">
@@ -135,9 +135,10 @@
                 eyeIcon.classList.add("fa-eye");
             }
         }
+    
     </script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
+    
 </body>
 </html>
