@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 20, 2025 at 05:48 PM
+-- Generation Time: Mar 21, 2025 at 02:00 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `userdetails` (
   `lastname` varchar(255) NOT NULL,
   `address` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `userdetails`
@@ -216,7 +216,8 @@ CREATE TABLE IF NOT EXISTS `userdetails` (
 
 INSERT INTO `userdetails` (`id`, `userid`, `role_id`, `email`, `firstname`, `lastname`, `address`) VALUES
 (2, 3, 1, 'athan@gmail.com', 'asd', 'asd', 'asd'),
-(3, 1, 1, 'boompanes', 'boom', 'panes', 'boompanes');
+(3, 1, 1, 'boompanes', 'boom', 'panes', 'boompanes'),
+(6, 9, 2, 'mak.g@gmail.com', 'mak', 'g', 'IBABA st.');
 
 -- --------------------------------------------------------
 
@@ -230,7 +231,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
@@ -238,7 +239,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`Id`, `username`, `password`, `created_at`) VALUES
 (1, 'admin', '$2y$10$7OtTiIZEX5hu8ADgAPxvIenTz3jztkFoWfUhXkMO35/lUfXigH8UW', '2025-03-12 14:55:41'),
-(3, 'asd', '$2y$10$N1Id4yrcBBpDVtU6JjnnUuhpHsMHmknEeDTAEPGzgsKDTb/uBbPg2', '2025-03-12 15:56:57');
+(3, 'asd', '$2y$10$N1Id4yrcBBpDVtU6JjnnUuhpHsMHmknEeDTAEPGzgsKDTb/uBbPg2', '2025-03-12 15:56:57'),
+(9, 'mak', '$2y$10$SEIux0RFfBeaLsTvWG8aUufo9fKq.SGhiGkKKF6van29s3hHEglFC', '2025-03-21 11:35:59');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
