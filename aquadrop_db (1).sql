@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 21, 2025 at 02:00 PM
+-- Generation Time: Mar 26, 2025 at 10:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `expenses` (
   `purpose` varchar(255) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   PRIMARY KEY (`expense_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `expenses`
@@ -44,14 +44,10 @@ CREATE TABLE IF NOT EXISTS `expenses` (
 
 INSERT INTO `expenses` (`expense_id`, `expenses_id`, `date`, `purpose`, `amount`) VALUES
 (1, 1, '2025-03-20 09:57:02', 'sdaegdasfwaf', 201.00),
-(2, 2, '2026-03-20 09:57:08', 'Flat Tire', 1000.00),
 (3, 3, '2025-03-20 09:57:11', 'Change Filter', 30000.00),
-(4, 1, '2025-03-20 09:57:14', 'salary', 1000.00),
-(5, 2, '2025-03-20 09:57:17', 'salary', 1000.00),
 (6, 3, '2025-03-20 09:57:21', 'meryenda', 200.00),
 (7, 1, '2025-03-20 09:57:23', 'sadwrffwa', 200.00),
-(8, 2, '2025-03-20 09:57:26', 'adsadnnananw1212', 300.00),
-(9, 1, '2025-03-20 10:00:55', 'safsdf', 300.00);
+(10, 1, '2025-03-26 04:56:59', 'asdaqwe2', 2000.00);
 
 -- --------------------------------------------------------
 
@@ -82,25 +78,27 @@ INSERT INTO `expense_type` (`expenses_id`, `expense_name`) VALUES
 
 CREATE TABLE IF NOT EXISTS `orders` (
   `order_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `contact_number` varchar(11) NOT NULL,
   `address` varchar(255) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `quantity` int(11) NOT NULL,
-  `payment` decimal(10,2) NOT NULL,
   `type_id` int(11) NOT NULL,
+  `payment` decimal(10,2) NOT NULL,
   `status_id` int(11) NOT NULL,
   `rider` varchar(255) NOT NULL,
   PRIMARY KEY (`order_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`order_id`, `name`, `contact_number`, `address`, `date`, `quantity`, `payment`, `type_id`, `status_id`, `rider`) VALUES
-(1, 'Jonathan Garinga', '09327572991', 'awdawfdaw', '2025-03-20 13:54:27', 5, 420.69, 2, 4, 'Klent Sylwen Pobadora'),
-(2, 'jonathan 2', '09123568974', 'qwadafgefa', '2025-03-20 10:31:29', 2, 0.00, 1, 4, 'Zachary Co Sam');
+INSERT INTO `orders` (`order_id`, `user_id`, `name`, `contact_number`, `address`, `date`, `quantity`, `type_id`, `payment`, `status_id`, `rider`) VALUES
+(4, 2, 'jonathan', '', 'ibaba ST.', '2025-03-26 19:48:18', 3, 1, 75.00, 1, '1'),
+(5, 0, 'jang', '09327572991', 'bomm panes', '2025-03-26 17:25:17', 2, 1, 50.00, 4, 'Klent Sylwen Pobs'),
+(6, 0, 'zeephyr', '09327572991', 'awdsafgefawd', '2025-03-26 17:30:07', 2, 1, 50.00, 4, 'asdatwaqdfad');
 
 -- --------------------------------------------------------
 
@@ -138,16 +136,6 @@ CREATE TABLE IF NOT EXISTS `sales` (
   `payment` decimal(10,2) NOT NULL,
   PRIMARY KEY (`sales_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `sales`
---
-
-INSERT INTO `sales` (`sales_id`, `name`, `date`, `quantity`, `type_id`, `payment`) VALUES
-(1, 'exequiel fernando', '2025-03-19 08:45:47', 5, 1, 200.00),
-(2, 'Jang Man Wol', '2025-03-18 13:15:26', 50, 2, 12300.00),
-(3, 'dadasdwa', '2025-03-18 14:29:58', 20, 2, 13000.00),
-(4, 'dasfdafrawf', '2025-03-19 14:30:13', 5, 2, 12345.00);
 
 -- --------------------------------------------------------
 
@@ -207,17 +195,19 @@ CREATE TABLE IF NOT EXISTS `userdetails` (
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
   `address` varchar(255) NOT NULL,
+  `contact_number` varchar(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `userdetails`
 --
 
-INSERT INTO `userdetails` (`id`, `userid`, `role_id`, `email`, `firstname`, `lastname`, `address`) VALUES
-(2, 3, 1, 'athan@gmail.com', 'asd', 'asd', 'asd'),
-(3, 1, 1, 'boompanes', 'boom', 'panes', 'boompanes'),
-(6, 9, 2, 'mak.g@gmail.com', 'mak', 'g', 'IBABA st.');
+INSERT INTO `userdetails` (`id`, `userid`, `role_id`, `email`, `firstname`, `lastname`, `address`, `contact_number`) VALUES
+(2, 3, 1, 'athan@gmail.com', 'asd', 'asd', 'asd', ''),
+(3, 1, 2, 'boompanes', 'boom', 'panes', 'boompanes', ''),
+(6, 9, 2, 'mak.g@gmail.com', 'mak', 'g', 'IBABA st.', ''),
+(7, 2, 2, 'nath@gmail.com', 'boom', 'panes', 'Sitio Panot', '09129281119');
 
 -- --------------------------------------------------------
 
@@ -239,6 +229,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`Id`, `username`, `password`, `created_at`) VALUES
 (1, 'admin', '$2y$10$7OtTiIZEX5hu8ADgAPxvIenTz3jztkFoWfUhXkMO35/lUfXigH8UW', '2025-03-12 14:55:41'),
+(2, 'nath', '$2y$10$33Ww55DQUDAwtvGGGEZd/e5dai05Kk4.qt21NFUYY/Ks56nhVa8.m', '2025-03-26 19:25:02'),
 (3, 'asd', '$2y$10$N1Id4yrcBBpDVtU6JjnnUuhpHsMHmknEeDTAEPGzgsKDTb/uBbPg2', '2025-03-12 15:56:57'),
 (9, 'mak', '$2y$10$SEIux0RFfBeaLsTvWG8aUufo9fKq.SGhiGkKKF6van29s3hHEglFC', '2025-03-21 11:35:59');
 COMMIT;
