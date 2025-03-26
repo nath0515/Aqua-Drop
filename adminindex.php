@@ -2,12 +2,12 @@
 	require ('session.php');
 	require ('db.php');
 
-    $sql = "SELECT * FROM sales";
+    $sql = "SELECT * FROM orders";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM sales";
+    $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM orders";
     $stmt_total_payment = $conn->prepare($sql_total_payment);
     $stmt_total_payment->execute();
     $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];

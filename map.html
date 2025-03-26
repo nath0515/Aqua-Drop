@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pin My Location - Santa Cruz, Laguna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            width: 90%;
+            max-width: 700px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        #pin-btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #pin-btn:hover {
+            background-color: #45a049;
+        }
+        .info {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>📍 Pin Your Location on the Map</h3>
+        <div id="map"></div>
+        <button id="pin-btn" onclick="getUserLocation()">📍 Pin My Location</button>
+        <p class="info">Click the button to mark your current location.</p>
+    </div>
+
+    <script>
+        var map;
+        var userMarker; // Store user's marker to prevent duplication
+
+        // Initialize and add the map
+        function initMap() {
+            // Default center to Santa Cruz, Laguna
+            var centerLocation = { lat: 14.2786, lng: 121.4174 };
+
+            // Create the map without adding any marker initially
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: centerLocation
+            });
+        }
+
+        // Get user's current location and add a marker only after clicking the button
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // Remove previous marker if it exists
+                    if (userMarker) {
+                        userMarker.setMap(null);
+                    }
+
+                    // Add marker for the user's location
+                    userMarker = new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        title: 'Your Location',
+                        icon: {
+                            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' // Blue marker for user's location
+                        }
+                    });
+
+                    // Center map to user's location after pinning
+                    map.setCenter(userLocation);
+
+                    var infoWindow = new google.maps.InfoWindow({
+                        content: '<h4>You are here!</h4>'
+                    });
+
+                    // Show info window when clicking the user's marker
+                    userMarker.addListener('click', function () {
+                        infoWindow.open(map, userMarker);
+                    });
+
+                }, function (error) {
+                    // Handle errors
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert('User denied the request for Geolocation.');
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert('Location information is unavailable.');
+                            break;
+                        case error.TIMEOUT:
+                            alert('The request to get user location timed out.');
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            alert('An unknown error occurred.');
+                            break;
+                    }
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+    </script>
+
+    <!-- Google Maps API with your API Key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgRujZP1TMyhiNrQHmakyOCzDlDVF95iY&callback=initMap" async defer></script>
+</body>
+</html>

@@ -4,17 +4,16 @@
 
     $sql = "";
     if(isset($_GET['id'])){
-        $sql = "SELECT order_id, name, contact_number, address, date, quantity, payment, rider, o.status_id, status_name, type_name FROM orders o
-        JOIN status s ON o.status_id = s.status_id
-        JOIN type t ON o.type_id = t.type_id
-        WHERE o.status_id = :status_id";
+        $sql = "SELECT order_id, name, contact_number, address, date, quantity, t.price, (o.quantity * t.price) AS total_price, rider, o.status_id, status_name, type_name FROM sales o
+            JOIN status s ON o.status_id = s.status_id
+            JOIN type t ON o.type_id = t.type_id WHERE date BETWEEN :start_date AND :end_date";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':status_id', $_GET['id']);
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     else{
-        $sql = "SELECT order_id, name, contact_number, address, date, quantity, payment, rider, o.status_id, status_name, type_name FROM orders o
+        $sql = "SELECT order_id, name, contact_number, address, date, quantity,price, payment, rider, o.status_id, status_name, type_name FROM orders o
         JOIN status s ON o.status_id = s.status_id
         JOIN type t ON o.type_id = t.type_id";
         $stmt = $conn->prepare($sql);
@@ -34,7 +33,6 @@
         <meta name="author" content="" />
         <title>Orders</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>

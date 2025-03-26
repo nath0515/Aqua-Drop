@@ -38,7 +38,7 @@
             exit();
         }
         else{
-            header("Location: asdasdasd.php");
+            header("Location: rider.php");
             exit();
         }
         

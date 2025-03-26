@@ -9,23 +9,96 @@ require ('db.php');
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Home -</title>
+    <title>Home - Aquadrop</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+    <script>
+        let orderData = {};
+        function placeOrder(product, price, type_id) {
+    let quantity = parseInt(document.getElementById(`${product}-qty`).innerText);
+    let name = prompt("Enter your name:");
+    let contact_number = prompt("Enter your contact number:");
+    let address = prompt("Enter your address:");
+
+    if (!name || !contact_number || !address) {
+        alert("All fields are required!");
+        return;
+    }
+
+    orderData = {
+        name: name,
+        contact_number: contact_number,
+        address: address,
+        quantity: quantity,
+        type_id: type_id,
+        payment: price * quantity,
+        status_id: 1, // Order status, 1 = Pending
+        rider: "" // Empty initially
+    };
+
+    // Show the modal with order details
+    document.getElementById('order-product').innerText = product.charAt(0).toUpperCase() + product.slice(1);  // Capitalize the first letter of the product name
+    document.getElementById('order-quantity').innerText = quantity;
+    document.getElementById('order-total').innerText = (price * quantity).toFixed(2);  // Show total price
+
+    // Display product price in modal
+    document.getElementById('order-product-price').innerText = `${price} Php`;
+
+    // Show the modal
+    $('#orderModal').modal('show');
+}
+
+        function updateQuantity(type, change, price) {
+            let qtyElement = document.getElementById(`${type}-qty`);
+            let totalElement = document.getElementById(`${type}-total`);
+            let qty = parseInt(qtyElement.innerText) + change;
+
+            if (qty < 1) qty = 1;
+            else if (qty > 15) qty = 15;
+
+            qtyElement.innerText = qty;
+            totalElement.innerText = (qty * price).toFixed(2);
+        }
+
+        function confirmOrder() {
+            // Simulate storing the order (you can connect to your database here)
+            console.log("Order confirmed:", orderData);
+
+            // You could send the order data to the server here using AJAX or other methods
+            // For example:
+            /*
+            fetch('process_order.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert("Order placed successfully!");
+                $('#orderModal').modal('hide');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+            */
+
+            // For now, let's just close the modal after "confirming"
+            alert("Your order has been placed successfully!");
+            $('#orderModal').modal('hide');
+        }
+    </script>
 </head>
 
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-       
         <a class="navbar-brand ps-3" href="index.php">Aquadrop</a>
-       
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">
             <i class="fas fa-bars"></i>
         </button>
-        <ul class="navbar-nav ms-auto  me-3 me-lg-4">
+        <ul class="navbar-nav ms-auto me-3 me-lg-4">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-user fa-fw"></i>
@@ -38,28 +111,21 @@ require ('db.php');
             </li>
         </ul>
     </nav>
+
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
-            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+            <nav class="sb-sidenav accordion sb-sidenav-dark">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Core</div>
-                        <a class="nav-link" href="index.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>
-                            Home
-                        </a>
-                        <a class="nav-link" href="customer_orders.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
-                            Orders
-                        </a>
-                        <a class="nav-link" href="map.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
-                            map
-                        </a>
+                        <a class="nav-link" href="index.php"><i class="fas fa-home sb-nav-link-icon"></i> Home</a>
+                        <a class="nav-link" href="customer_orders.php"><i class="fas fa-shopping-cart sb-nav-link-icon"></i> Orders</a>
+                        <a class="nav-link" href="usermaps.php"><i class="fas fa-map sb-nav-link-icon"></i> Map</a>
                     </div>
                 </div>
             </nav>
         </div>
+        
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
@@ -69,48 +135,46 @@ require ('db.php');
                     </ol>
                     <div class="container mt-4">
                         <h2 class="text-center mb-4">Water Products</h2>
-                       
                         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                             
+
+                            <!-- Boiled Water Product -->
                             <div class="col">
                                 <div class="card h-100">
                                     <div class="card-body text-center">
-                                        <img src="icons/withfaucet.jpeg" alt="Boiled Water Logo" class="img-fluid mb-1" style="max-width: 150px;">
+                                        <img src="icons/withfaucet.jpeg" alt="Boiled Water" class="img-fluid mb-1" style="max-width: 150px;">
                                         <h3 class="card-title">Boiled Water</h3>
-                                        <p class="card-text">Price: 40 Php</p>
+                                        <p class="card-text">Price: 20 Php</p>
                                         <div class="d-flex justify-content-center align-items-center mb-1">
-                                            <button class="btn btn-secondary" onclick="updateQuantity('boiled', -1)">-</button>
+                                            <button class="btn btn-secondary" onclick="updateQuantity('boiled', -1, 20)">-</button>
                                             <span class="mx-3" id="boiled-qty">1</span>
-                                            <button class="btn btn-secondary" onclick="updateQuantity('boiled', 1)">+</button>
+                                            <button class="btn btn-secondary" onclick="updateQuantity('boiled', 1, 20)">+</button>
                                         </div>
-                                        <p class="total-price mt-2">Total: <span id="boiled-total">40.0</span> Php</p>
-                                        <p class="text-muted">Payment Method: Cash on Delivery (COD) only</p>
-                                        <button class="btn btn-primary order-button">Order</button>
+                                        <p class="total-price mt-2">Total: <span id="boiled-total">20.00</span> Php</p>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addorder">Order</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
+                            <!-- GG Water Product -->
+                            <div class="col">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <img src="logo.png" alt="GG Water" class="img-fluid mb-1" style="max-width: 150px;">
+                                        <h3 class="card-title">GG</h3>
+                                        <p class="card-text">Price: 20 Php</p>
+                                        <div class="d-flex justify-content-center align-items-center mb-1">
+                                            <button class="btn btn-secondary" onclick="updateQuantity('gg', -1, 20)">-</button>
+                                            <span class="mx-3" id="gg-qty">1</span>
+                                            <button class="btn btn-secondary" onclick="updateQuantity('gg', 1, 20)">+</button>
+                                        </div>
+                                        <p class="total-price mt-2">Total: <span id="gg-total">20.00</span> Php</p>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" onclick="placeOrder('gg', 20, 2)">Order</button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col">
-                                <div class="card h-100">
-                                    <div class="card-body text-center">
-                                        <img src="logo.png" alt="gg Water Logo" class="img-fluid mb-1" style="max-width: 150px;">
-                                        <h3 class="card-title">gg</h3>
-                                        <p class="card-text">Price: 20 Php</p>
-                                        <div class="d-flex justify-content-center align-items-center mb-1">
-                                            <button class="btn btn-secondary" onclick="updateQuantity('gg', -1)">-</button>
-                                            <span class="mx-3" id="gg-qty">1</span>
-                                            <button class="btn btn-secondary" onclick="updateQuantity('gg', 1)">+</button>
-                                        </div>
-                                        <p class="total-price mt-2">Total: <span id="boiled-total">20.0</span> Php</p>
-                                        <p class="text-muted">Payment Method: Cash on Delivery (COD) only</p>
-                                        <button class="btn btn-primary order-button">Order</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-            
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -118,30 +182,34 @@ require ('db.php');
         </div>
     </div>
 
-    <script>
-        function updateQuantity(type, change) {
-            let qtyElement = document.getElementById(type + "-qty");
-            let totalElement = document.getElementById(type + "-total");
-            let pricePerItem = type === 'boiled' ? 40 : 50;
-            
+    
+    <!-- Order Modal -->
+    <div class="modal fade" id="addorder" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderModalLabel">Order Summary</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+                    <strong>Product:</strong> <span id="Prouduct-name"></span>
+                </div>
+            <div class="mb-3">
+                    <strong>Quantity:</strong> <span id="order-quantity"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Total Price:</strong> <span id="order-total"></span> Php
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="confirmOrder()">Confirm Order</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-            let qty = parseInt(qtyElement.innerText);
-            qty += change;
-
-            if (qty < 1) {
-                qty = 1; // Minimum 1 quantity
-            }
-
-            qtyElement.innerText = qty;
-            totalElement.innerText = (qty * pricePerItem).toFixed(2);
-        }
-    </script>
-
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/scripts.js"></script>
 </body>
-
 </html>

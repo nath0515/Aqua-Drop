@@ -2,53 +2,27 @@
 	require ('session.php');
 	require ('db.php');
 
-    if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
-        $start_date = $_GET['start_date'];
-        $end_date = $_GET['end_date'];
-
-        if (validateDate($start_date) && validateDate($end_date)) {
-            $start_datetime = $start_date . ' 00:00:00';
-            $end_datetime = $end_date . ' 23:59:59';
-
-            $sql = "SELECT order_id, name, contact_number, address, date, quantity, t.price, (o.quantity * t.price) AS total_price,  rider, o.status_id, status_name, type_name FROM orders o
+    $sql = "";
+    if(isset($_GET['id'])){
+        $sql = "SELECT order_id, name, contact_number, address, date, quantity, t.price, (o.quantity * t.price) AS total_price, rider, o.status_id, status_name, type_name FROM sales o
             JOIN status s ON o.status_id = s.status_id
-            JOIN type t ON o.type_id = t.type_id WHERE date BETWEEN :start_date AND :end_date AND o.status_id = 4";
-
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':start_date', $start_datetime, PDO::PARAM_STR);
-            $stmt->bindParam(':end_date', $end_datetime, PDO::PARAM_STR);
-            $stmt->execute();
-
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM orders WHERE date BETWEEN :start_date AND :end_date AND status_id = 4";
-            $stmt_total_payment = $conn->prepare($sql_total_payment);
-            $stmt_total_payment->bindParam(':start_date', $start_datetime, PDO::PARAM_STR);
-            $stmt_total_payment->bindParam(':end_date', $end_datetime, PDO::PARAM_STR);
-            $stmt_total_payment->execute();
-            $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
-        }
+            JOIN type t ON o.type_id = t.type_id WHERE date BETWEEN :start_date AND :end_date AND o.status_id=3";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':status_id', $_GET['id']);
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     else{
         $sql = "SELECT order_id, name, contact_number, address, date, quantity,price, (o.quantity * t.price) AS total_price, rider, o.status_id, status_name, type_name FROM orders o
         JOIN status s ON o.status_id = s.status_id
         JOIN type t ON o.type_id = t.type_id
-        WHERE o.status_id = 4";
+        WHERE o.status_id = 3" ;
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-        $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM orders WHERE status_id=4";
-        $stmt_total_payment = $conn->prepare($sql_total_payment);
-        $stmt_total_payment->execute();
-        $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
-    }
 	
-    function validateDate($date) {
-        $d = DateTime::createFromFormat('Y-m-d', $date);
-        return $d && $d->format('Y-m-d') === $date;
-    }
-    
 
 ?>
 <html lang="en">
@@ -60,7 +34,6 @@
         <meta name="author" content="" />
         <title>Orders</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -68,7 +41,7 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">
+            <a class="navbar-brand ps-3" href="adminindex.php">
 
 
                 <img src="icons/transparentlogo.png" style="width: 200px; height: 150px;">
@@ -96,33 +69,16 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav align-items-center">
-                         
-                            <a class="nav-link" href="adminindex.php">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Home
-                            </a>
                            
                             <a class="nav-link" href="orders.php">
                                 <div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i></div>
                                 Orders
                             </a>
-
-                            <a class="nav-link" href="stocks.php">
-                                <div class="sb-nav-link-icon"><i class="bi bi-box-seam-fill"></i></div>
-                                Stock
+                            <a class="nav-link" href="maps.php">
+                                <div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i></div>
+                                Map
                             </a>
 
-                            <a class="nav-link" href="sales.php">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Sales
-                            </a>
-
-                             <a class="nav-link" href="expenses.php ">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Expenses
-                            </a>
-                            
-                            </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="layout-static.html">Static Navigation</a>
@@ -169,43 +125,35 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Sales : ₱ <?php echo number_format($total_payment, 2); ?></h1>                      
-                        <ul class="navbar-nav ms-auto me-3 me-lg-4 d-flex align-items-">
+                        <h1 class="mt-4">Orders</h1>
+                       
+                        <ul class="navbar-nav ms-auto  me-3 me-lg-4">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-filter-circle-fill fs-2"></i> Filter by Date Range
-                                </a>
-                                <div class="dropdown-menu p-4" aria-labelledby="navbarDropdown">
-                                    <form action="sales.php" method="GET">
-                                        <div class="mb-3">
-                                            <label for="start_date" class="form-label">Start Date</label>
-                                            <input type="date" id="start_date" name="start_date" class="form-control" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="end_date" class="form-label">End Date</label>
-                                            <input type="date" id="end_date" name="end_date" class="form-control" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Filter</button>
-                                    </form>
-                                </div>
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" ><i class="bi bi-filter-circle-fill fs-2"></i></a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="orders.php">All</a></li>
+                                    <li><a class="dropdown-item" href="orders.php?id=3">Delivering</a></li>
+                                    <li><a class="dropdown-item" href="orders.php?id=4">Completed</a></li>
+                                </ul>
                             </li>
-                        </ul>                       
+                        </ul>
+                       
                         <div class="card mb-4">
                            
                             <div class="card-body">
                                 <table id="datatablesSimple">
-                                <thead>
+                                    <thead>
                                         <tr>
                                             <th>Name</th>
                                             <th>Contact #</th>
                                             <th>Address</th>
                                             <th>Date</th>
                                             <th>Quantity</th>
-                                            <th>Price</th>
                                             <th>Payment</th>
                                             <th>Type</th>
                                              <th>Status</th>
                                              <th>Rider</th>
+                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -215,26 +163,30 @@
                                             <th>Address</th>
                                             <th>Date</th>
                                             <th>Quantity</th>
-                                            <th>Price</th>
                                             <th>Payment</th>
                                             <th>Type</th>
                                             <th>Status</th>
                                             <th>Rider</th>
+                                            <th>Action</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <?php foreach($data as $row): ?>
-                                        <tr>
+                                        <tr data-id="<?php echo $row['order_id']?>">
                                             <td><?php echo $row['name']?></td>
                                             <td><?php echo $row['contact_number']?></td>
                                             <td><?php echo $row['address']?></td>
                                             <td><?php echo $row['date']?></td>
                                             <td><?php echo $row['quantity']?></td>
-                                            <td><?php echo $row['price']?></td>
-                                            <td>₱ <?php echo $row['total_price']?></td>
+                                            <td><?php echo $row['total_price']?></td>
                                             <td><?php echo $row['type_name']?></td>
                                             <td><?php echo $row['status_name']?></td>
                                             <td><?php echo $row['rider']?></td>
+                                            <td class="text-center align-middle">
+                                                <button type='button' class='btn btn-outline-primary btn-lg' data-bs-toggle='modal' data-order-id='<?php echo $row['order_id']?>' data-id='<?php echo $row['status_id']?>' data-bs-target='#editstatus' title='Edit Task'>
+                                                        <i class='fa fa-edit'></i>
+                                                </button>
+                                            </td> 
                                         </tr>
                                         <?php endforeach;?>
                                     </tbody>
@@ -246,6 +198,49 @@
 
             </div>
         </div>
+        <!-- Modal Structure -->
+        <div class="modal fade" id="editstatus" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-plus-circle"></i>Edit Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <form action="process_addorder.php" method="POST">
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <?php 
+                                    $sql = "SELECT * FROM status WHERE status_id != 1 AND status_id != 2";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->execute();
+                                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                
+                                ?>
+                                <select class="form-select" name="status_id" id="editstatusid" required>
+                                    <option value="">Select Status</option>
+                                    <?php foreach($data as $row):?>
+                                    <option value="<?php echo $row['status_id']?>" id="editstatus"><?php echo $row['status_name']?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="text" name="order_id" id="editorderid" hidden>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
@@ -253,5 +248,40 @@
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="js/datatables-simple-demo.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqLYbSqHK4SpCq4FIGTf1JVC7CaLgUi6g&callback=initMap" async defer></script>
+
+        <script>
+            $('#editstatus').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var statusId = button.data('id');
+                var orderId = button.data('order-id');
+                document.getElementById("editstatusid").value = statusId;
+                document.getElementById("editorderid").value = orderId;
+            });
+
+        </script>
+
+    <?php if (isset($_GET['status'])): ?>
+        <script>
+            <?php if ($_GET['status'] == 'success'): ?>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Order Updated!',
+                    text: 'The order has been successfully updated.',
+                }).then((result) => {
+                });
+            <?php elseif ($_GET['status'] == 'error'): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong while editing the order.',
+                });
+            <?php endif; ?>
+        </script>
+    <?php endif; ?>
+
+        
     </body>
 </html>

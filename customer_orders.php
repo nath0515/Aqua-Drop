@@ -1,3 +1,17 @@
+<?php 
+require ('session.php');
+require ('db.php');
+
+$sql = "SELECT a.firstname, a.lastname, a.address, b.date, c.type_name, c.price, b.quantity, (c.price * b.quantity) as total_price, d.status_name FROM orders b
+JOIN userdetails a ON a.userid = b.user_id
+JOIN type c ON c.type_id = b.type_id
+JOIN status d ON b.status_id = d.status_id";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -77,28 +91,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Mark</td>
-                                            <td>ibaba</td>
-                                            <td>July 3, 2025 10:25pm</td>
-                                            <td>boiled</td>
-                                            <td>40</td>
-                                            <td>1</td>
-                                            <td>40</td>
-                                            <td>pending</td>
-                                            
-                                        </tr>
-                                        <tr>
-                                            <td>Jacob</td>
-                                            <td>pila</td>
-                                            <td>July 4, 2025 12:00pm</td>
-                                            <td>test</td>
-                                            <td>10</td>
-                                            <td>3</td>
-                                            <td>30</td>
-                                            <td>pending</td>
-                                          
-                                        </tr>
+                                        <?php foreach ($data as $row):?>
+                                            <tr>
+                                                <td><?php echo $row['firstname']." ".$row['lastname']?></td>
+                                                <td><?php echo $row['address']?></td>
+                                                <td><?php echo $row['date']?></td>
+                                                <td><?php echo $row['type_name']?></td>
+                                                <td><?php echo $row['price']?></td>
+                                                <td><?php echo $row['quantity']?></td>
+                                                <td><?php echo $row['total_price']?></td>
+                                                <td><?php echo $row['status_name']?></td>
+                                            </tr>
+                                        <?php endforeach;?>
                                     </tbody>
                                 </table>
                             </div>
