@@ -65,6 +65,7 @@ require('db.php');
         </ul>
     </nav>
 
+
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark">
@@ -119,7 +120,7 @@ require('db.php');
                                             <span class="mx-3" id="gg-qty">1</span>
                                             <button class="btn btn-secondary" onclick="updateQuantity('gg', 1, 20)">+</button>
                                         </div>
-                                        <p class="total-price mt-2">Total: <span id="gg-total">20.00</span> Php</p>
+                                        <p class="total-price mt-2">Total: <span id="gg-total">21.00</span> Php</p>
                                         <button class="btn btn-primary" onclick="placeOrder('gg', 20, 2)">Order</button>
                                     </div>
                                 </div>
