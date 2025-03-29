@@ -58,6 +58,7 @@ require('db.php');
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="profile.html">Settings</a></li>
+                    <li><a class="dropdown-item" href="profile.html">Notification</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                 </ul>
