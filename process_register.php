@@ -1,5 +1,11 @@
 <?php 
-	require ('db.php');
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php'; // PHPMailer autoload
+
+require ('db.php'); // Include your DB connection file
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Get the form data
@@ -12,10 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirmPassword'];
 
-    try{
-        if($password == $confirmPassword){
+    try {
+        // Check if passwords match
+        if ($password == $confirmPassword) {
             $password_hashed = password_hash($password, PASSWORD_DEFAULT);
 
+            // Check if username already exists
             $sqlcheck = "SELECT * FROM users WHERE username = :username";
             $stmt = $conn->prepare($sqlcheck);
             $stmt->bindParam(':username', $username);
@@ -24,17 +32,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt->rowCount() > 0) {
                 header("Location: register.php?status=exist");
                 exit();
-            } 
-            else {
-                $sql = "INSERT INTO users (username, password) VALUES (:username, :password)";
+            } else {
+                // Generate a unique verification token
+                $verification_token = bin2hex(random_bytes(16)); // 32 characters long token
+
+                // Insert user into the users table
+                $sql = "INSERT INTO users (username, password, verification_token) VALUES (:username, :password, :verification_token)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bindParam(':username', $username);
                 $stmt->bindParam(':password', $password_hashed);
+                $stmt->bindParam(':verification_token', $verification_token);
                 $stmt->execute();
 
                 $last_id = $conn->lastInsertId();
 
-                $sql1 = "INSERT INTO userdetails (userid, role_id, email, firstname, lastname, address) VALUES (:userid, 2, :email, :firstname, :lastname, :address)";
+                // Insert user details into the userdetails table
+                $sql1 = "INSERT INTO userdetails (userid, role_id, email, firstname, lastname, address) 
+                         VALUES (:userid, 2, :email, :firstname, :lastname, :address)";
                 $stmt = $conn->prepare($sql1);
                 $stmt->bindParam(':userid', $last_id);
                 $stmt->bindParam(':email', $email);
@@ -43,18 +57,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->bindParam(':address', $address);
                 $stmt->execute();
 
-                header("Location: register.php?status=success");
-                exit();
+                // Send the verification email
+                $mailsent= sendVerificationEmail($email, $verification_token);
+
+                if ($mailsent){
+                    header("Location: register.php?status=success");
+                    exit();
+                }
+                else{
+                    header("Location: register.php?status=error");
+                    exit();
+                }
+                
             }
-        }
-        else{
+        } else {
             header("Location: register.php?status=xmatch");
             exit();
         }
-    }
-    catch (PDOException $e) {
+    } catch (PDOException $e) {
+        // If an error occurs
         header("Location: register.php?status=error");
         exit();
+    }
+}
+
+// Function to send the verification email using PHPMailer
+function sendVerificationEmail($email, $verification_token) {
+    $mail = new PHPMailer(true);
+    try {
+        // Set up PHPMailer
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com'; // Gmail SMTP server
+        $mail->SMTPAuth = true;
+        $mail->Username = 'system.aquadrop@gmail.com'; // Your Gmail address
+        $mail->Password = 'nasv xpiv whcv zuzd'; // Your Gmail password or App password
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+        $mail->SMTPDebug = 2;
+
+        $mail->setFrom('system.aquadrop@gmail.com', 'aqua drop');
+        $mail->addAddress($email); // Recipient's email address
+
+        // Content of the email
+        $mail->isHTML(true);
+        $mail->Subject = 'Email Verification';
+        $mail->Body = "Hi,<br><br>Click the link below to verify your email address:<br><br>
+                       <a href='http://localhost/Aqua-Drop/verify_email.php?token=$verification_token'>Verify Email</a><br><br>Thank you.";
+
+        // Send the email
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        return false;
     }
 }
 ?>

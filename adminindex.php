@@ -2,15 +2,38 @@
 	require ('session.php');
 	require ('db.php');
 
-    $sql = "SELECT * FROM orders";
+    $sql = "SELECT * FROM orders WHERE status_id=4";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM orders";
+    $sql_today_payment = "SELECT SUM(o.quantity * t.price) AS total_payment FROM orders o
+    JOIN type t ON o.type_id = t.type_id
+     WHERE status_id=4 AND DATE(o.date) = CURDATE()";
+    $stmt_today_payment = $conn->prepare($sql_today_payment);
+    $stmt_today_payment->execute();
+    $paymentdata = $stmt_today_payment->fetch(PDO::FETCH_ASSOC);
+
+    $sql_total_payment = "SELECT SUM(o.quantity * t.price) AS total_payment FROM orders o
+    JOIN type t ON o.type_id = t.type_id
+     WHERE status_id=4";
     $stmt_total_payment = $conn->prepare($sql_total_payment);
     $stmt_total_payment->execute();
-    $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
+    $total_payment_data = $stmt_total_payment->fetch(PDO::FETCH_ASSOC);
+    $total_payment = $total_payment_data['total_payment'];
+
+    $sql = "SELECT * FROM expenses";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $data1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql_total_amounts = "SELECT SUM(amount) AS total_amount FROM expenses";
+    $stmt_total_amounts = $conn->prepare($sql_total_amounts);
+    $stmt_total_amounts->execute();
+    $total_amounts = $stmt_total_amounts->fetch(PDO::FETCH_ASSOC);
+    $total_amount = $total_amounts['total_amount'];
+
+    $total_income = $total_payment - $total_amount;
 
     // Prepare arrays for the chart
     $dates = [];
@@ -42,15 +65,7 @@
         $payments[] = $total_payment;
     }
 
-    $sql = "SELECT * FROM expenses";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $data1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $sql_total_amounts = "SELECT SUM(amount) AS total_amount FROM expenses";
-    $stmt_total_amounts = $conn->prepare($sql_total_amounts);
-    $stmt_total_amounts->execute();
-    $total_amounts = $stmt_total_amounts->fetch(PDO::FETCH_ASSOC)['total_amount'];
+    
 
     // Prepare arrays for the chart
     $dates = [];
@@ -94,8 +109,6 @@
         $income[] = $payment - $amount;
     }
 
-    $total_income = $total_payment - $total_amount;
-
 ?>
 
 <!DOCTYPE html>
@@ -115,9 +128,6 @@
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">
-
 
                 <img src="icons/transparentlogo.png" style="width: 200px; height: 150px;">
 
@@ -211,7 +221,7 @@
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Start Bootstrap
+                        <?php echo $_SESSION['username']?>
                     </div>
                 </nav>
             </div>
@@ -228,7 +238,7 @@
                                     <div class="card-body" style="font-size: 25px;">Sales
                                         <ol class="breadcrumb">
                             
-                                            ₱ <?php echo number_format($total_payment, 2);?>
+                                            ₱ <?php echo number_format($paymentdata['total_payment'], 2);?>
                                         </ol>
                                     </div>
                                     
@@ -257,7 +267,7 @@
                                 <div class="card bg-danger text-white mb-4">
                                     <div class="card-body" style="font-size: 25px;">Expenses
                                         <ol class="breadcrumb">
-                                            ₱ <?php echo number_format($total_amounts, 2); ?>
+                                            ₱ <?php echo number_format($total_amount, 2); ?>
                                         </ol>
                                     </div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
@@ -343,7 +353,7 @@
                 pointHoverBackgroundColor: "rgba(2,117,216,1)",
                 pointHitRadius: 50,
                 pointBorderWidth: 2,
-                data: <?php echo json_encode($payments); ?>,
+                data: <?php echo json_encode($sql_total_payment); ?>,
                 }],
             },
             options: {

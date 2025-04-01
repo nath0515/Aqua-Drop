@@ -11241,3 +11241,21 @@ body {
   font-size: 0.75rem;
   border-radius: 0.375rem !important;
 }
+
+#set{
+  display: block;
+  position: relative;
+
+}
+#count{
+  display: inline-block;
+  font-size: 18px;
+  color: black;
+  font-weight: bolder;
+}
+input[id='password']{
+
+}
+#check0, #check1, #check2, #check3, #check4{
+  color: red;
+}

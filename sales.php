@@ -21,7 +21,9 @@
 
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM orders WHERE date BETWEEN :start_date AND :end_date AND status_id = 4";
+            $sql_total_payment = "SELECT SUM(o.quantity * t.price) AS total_payment FROM orders o
+            JOIN type t ON o.type_id = t.type_id
+             WHERE date BETWEEN :start_date AND :end_date AND status_id = 4";
             $stmt_total_payment = $conn->prepare($sql_total_payment);
             $stmt_total_payment->bindParam(':start_date', $start_datetime, PDO::PARAM_STR);
             $stmt_total_payment->bindParam(':end_date', $end_datetime, PDO::PARAM_STR);
@@ -38,7 +40,9 @@
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $sql_total_payment = "SELECT SUM(payment) AS total_payment FROM orders WHERE status_id=4";
+        $sql_total_payment = "SELECT SUM(o.quantity * t.price) AS total_payment FROM orders o
+        JOIN type t ON o.type_id = t.type_id
+        WHERE status_id=4";
         $stmt_total_payment = $conn->prepare($sql_total_payment);
         $stmt_total_payment->execute();
         $total_payment = $stmt_total_payment->fetch(PDO::FETCH_ASSOC)['total_payment'];
@@ -67,10 +71,7 @@
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">
-
-
+            <a class="navbar-brand ps-3" href="adminindex.php">    
                 <img src="icons/transparentlogo.png" style="width: 200px; height: 150px;">
 
             </a>
@@ -162,14 +163,25 @@
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Admin
+                        <?php echo $_SESSION['username']?>
                     </div>
                 </nav>
             </div>
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Sales : ₱ <?php echo number_format($total_payment, 2); ?></h1>                      
+                        <div>
+                            <div class="row">
+                                <div class="col-10" >
+                                    <h1 class="mt-4">Sales : ₱ <?php echo number_format($total_payment, 2); ?></h1>
+                                </div>
+                                <div class="col-2 d-flex align-items-center">
+                                <button class="btn btn-outline-secondary mt-3 ms-5" data-bs-toggle="modal" data-bs-target="#addsales"><i class="bi bi-plus-circle"></i>
+                                    Add Sales
+                                </button>
+                            </div>   
+                            </div>
+                        </div>                   
                         <ul class="navbar-nav ms-auto me-3 me-lg-4 d-flex align-items-">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -246,12 +258,162 @@
 
             </div>
         </div>
+        <div class="modal fade" id="addsales" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-plus-circle"></i>Add Expenses</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <form action="process_addsale.php" method="POST">
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <?php 
+                                    $sql = "SELECT * FROM type";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->execute();
+                                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                
+                                ?>
+                                <select class="form-select" name="type_id" id="type_id" required>
+                                    <option value="">Select Product</option>
+                                    <?php foreach($data as $row):?>
+                                    <option value="<?php echo $row['type_id']?>"><?php echo $row['type_name']?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text pe-3"><i class="bi bi-plus-slash-minus"></i></span>
+                                <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Quantity" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text pe-3">₱</span>
+                                <input type="number" step="0.01" id="amount" class="form-control" placeholder="Amount" required readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add Sale</button>
+                    </div>
+
+                </form>
+
+            </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <script src="assets/demo/chart-area-demo.js"></script>
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="js/datatables-simple-demo.js"></script>
+        <?php if (isset($_GET['status'])): ?>
+            <script>
+                <?php if ($_GET['status'] == 'success'): ?>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sales Added!',
+                        text: 'The sales has been successfully added.',
+                    }).then((result) => {
+                    });
+                <?php elseif ($_GET['status'] == 'error'): ?>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong while adding the sales.',
+                    });
+                <?php endif; ?>
+            </script>
+        <?php endif; ?>
+
+        <script>
+            $(document).ready(function() {
+                var table = $('#datatablesSimple').DataTable();
+
+                $("#start_date, #end_date").datepicker({
+                    dateFormat: "yy-mm-dd"
+                });
+
+                // Date range filter
+                $('#start_date, #end_date').change(function() {
+                    var startDate = $('#start_date').val();
+                    var endDate = $('#end_date').val();
+
+                    table.rows().every(function() {
+                        var date = $(this.node()).find('td').eq(2).text(); // Get the date from the 3rd column (index 2)
+
+                        if (startDate && endDate) {
+                            if (new Date(date) >= new Date(startDate) && new Date(date) <= new Date(endDate)) {
+                                $(this.node()).show();
+                            } else {
+                                $(this.node()).hide();
+                            }
+                        } else if (startDate && new Date(date) >= new Date(startDate)) {
+                            $(this.node()).show();
+                        } else if (endDate && new Date(date) <= new Date(endDate)) {
+                            $(this.node()).show();
+                        } else {
+                            $(this.node()).show();
+                        }
+                    });
+                });
+            });
+        </script>
+        <script>
+            let amount = 0.00;
+
+            document.getElementById('type_id').addEventListener('change', function() {
+                let type_id = this.value;
+
+                fetch('process_autopopulatesales.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'type_id=' + type_id
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                        console.log(data);
+                        document.getElementById('quantity').value = '';
+                        document.getElementById('amount').value = '';
+
+                    } else {
+                        console.log(data);
+                        document.getElementById('quantity').value = 1;
+                        document.getElementById('amount').value = data.price;
+                        amount = data.price;
+
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            document.getElementById('quantity').addEventListener('change', function() {
+                let quantity = this.value;
+                let newAmount = amount * quantity;
+                document.getElementById('amount').value = newAmount.toFixed(2);
+                if(quantity < 1){
+                    this.value = 0;
+                    document.getElementById('amount').value = (0).toFixed(2);
+                    
+                }
+            });
+        </script>
     </body>
 </html>

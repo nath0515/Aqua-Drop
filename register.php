@@ -40,27 +40,52 @@
                                         <div class="mb-3">
                                             <input type="text" name="address" class="form-control" placeholder="Address" required>
                                         </div>
-                                
-                                      
+                                  
+                                        <!-- Password Field -->
                                         <div class="mb-3">
                                             <div class="input-group">
-                                                <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
+                                                <input type="password" name="password" class="form-control" id="password" placeholder="Password"
+                                                onInput="check()" required>
+                                                <br>
+                                                <div id="set">
+                                                
+                                                </div>
                                                 <span class="input-group-text" onclick="togglePassword('password', this)">
                                                     <i class="fa fa-eye"></i>
                                                 </span>
                                             </div>
+                                        
+                                            <div id="count">Length : 0</div>
+                                            <!-- Password Strength Check (Moved here under Confirm Password) -->
+                                        <div id="check0">
+                                            <i class="far fa-check-circle"></i> <span> Length more than 5.</span>
+                                        </div>
+                                        <div id="check1">
+                                            <i class="far fa-check-circle"></i> <span> Length less than 10.</span>
+                                        </div>
+                                        <div id="check2">
+                                            <i class="far fa-check-circle"></i> <span> Contains numerical character.</span>
+                                        </div>
+                                        <div id="check3">
+                                            <i class="far fa-check-circle"></i> <span> Contains special character.</span>
+                                        </div>
+                                        <div id="check4">
+                                            <i class="far fa-check-circle"></i> <span> Shouldn't contain spaces.</span>
+                                        </div>
                                         </div>
                                         
-                                        
+                                        <!-- Confirm Password Field -->
                                         <div class="mb-3">
                                             <div class="input-group">
-                                                <input type="confirmpassword" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                                                <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
                                                 <span class="input-group-text" onclick="togglePassword('confirmPassword', this)">
                                                     <i class="fa fa-eye"></i>
                                                 </span>
                                             </div>
                                         </div>
+
                                         
+
                                         <button type="submit" class="btn btn-primary w-100">Sign Up</button>
                                     </form>
                                 </div>
@@ -121,7 +146,7 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Account Added!',
-                    text: 'The account has been successfully created.',
+                    text: 'The account has been successfully created. Please check your email to verify.',
                 }).then((result) => { window.location.href = "login.php";
                 });
             <?php endif ?>

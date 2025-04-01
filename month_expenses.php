@@ -131,7 +131,7 @@
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Admin
+                        <?php echo $_SESSION['username']?>
                     </div>
                 </nav>
             </div>

@@ -4,16 +4,16 @@
 
     $sql = "";
     if(isset($_GET['id'])){
-        $sql = "SELECT order_id, name, contact_number, address, date, quantity, t.price, (o.quantity * t.price) AS total_price, rider, o.status_id, status_name, type_name FROM sales o
+        $sql = "SELECT order_id, name, contact_number, address, date, quantity, t.price, (o.quantity * t.price) AS total_price, rider, o.status_id, status_name, type_name FROM orders o
             JOIN status s ON o.status_id = s.status_id
-            JOIN type t ON o.type_id = t.type_id WHERE date BETWEEN :start_date AND :end_date";
+            JOIN type t ON o.type_id = t.type_id WHERE o.status_id = :id";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':status_id', $_GET['id']);
+        $stmt->bindParam(':id', $_GET['id']);
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     else{
-        $sql = "SELECT order_id, name, contact_number, address, date, quantity,price, payment, rider, o.status_id, status_name, type_name FROM orders o
+        $sql = "SELECT order_id, name, contact_number, address, date, quantity,price, (o.quantity * t.price) AS total_price, payment, rider, o.status_id, status_name, type_name FROM orders o
         JOIN status s ON o.status_id = s.status_id
         JOIN type t ON o.type_id = t.type_id";
         $stmt = $conn->prepare($sql);
@@ -134,7 +134,7 @@
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Admin
+                        <?php echo $_SESSION['username']?>
                     </div>
                 </nav>
             </div>
@@ -168,6 +168,7 @@
                                             <th>Address</th>
                                             <th>Date</th>
                                             <th>Quantity</th>
+                                            <th>Price</th>
                                             <th>Payment</th>
                                             <th>Type</th>
                                              <th>Status</th>
@@ -182,6 +183,7 @@
                                             <th>Address</th>
                                             <th>Date</th>
                                             <th>Quantity</th>
+                                            <th>Price</th>
                                             <th>Payment</th>
                                             <th>Type</th>
                                             <th>Status</th>
@@ -197,7 +199,8 @@
                                             <td><?php echo $row['address']?></td>
                                             <td><?php echo $row['date']?></td>
                                             <td><?php echo $row['quantity']?></td>
-                                            <td><?php echo $row['payment']?></td>
+                                            <td><?php echo $row['price']?></td>
+                                            <td><?php echo $row['total_price']?></td>
                                             <td><?php echo $row['type_name']?></td>
                                             <td><?php echo $row['status_name']?></td>
                                             <td><?php echo $row['rider']?></td>

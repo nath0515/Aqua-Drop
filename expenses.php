@@ -168,7 +168,7 @@
                             </div>
                             <div class="col-2 d-flex align-items-center">
                                 <button class="btn btn-outline-secondary mt-3 ms-5" data-bs-toggle="modal" data-bs-target="#addexpenses"><i class="bi bi-plus-circle"></i>
-                                    Open Modal
+                                    Add Expenses
                                 </button>
                             </div>
                         </div>  

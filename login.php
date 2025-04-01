@@ -1,5 +1,10 @@
 <?php 
-  session_start();
+    session_start();
+
+    if (isset($_SESSION['loggedin'])) {
+        header("Location: logout.php");
+        exit();
+    }
 
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     include('db.php');
@@ -15,32 +20,38 @@
       $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
       if (password_verify($password, $user['password'])) {
-        $_SESSION['username'] = $username;
-        $_SESSION['user_id'] = $user['Id'];
-        $_SESSION['loggedin'] = true;
 
-        //check role
-        $sql = "SELECT role_id FROM userdetails WHERE userid = :userid";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':userid', $user['Id']);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $role_id = $result['role_id'];
+        if($user['email_verified']==1){
+            $_SESSION['username'] = $username;
+            $_SESSION['user_id'] = $user['Id'];
+            $_SESSION['loggedin'] = true;
+
+            //check role
+            $sql = "SELECT role_id FROM userdetails WHERE userid = :userid";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':userid', $user['Id']);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $role_id = $result['role_id'];
+            
+            //put into session
+            $_SESSION['role_id'] = $role_id;
+            if($role_id == 1){
+                header("Location: adminindex.php");
+                exit();
+            }
+            else if($role_id == 2){
+                header("Location: index.php");
+                exit();
+            }
+            else{
+                header("Location: rider.php");
+                exit();
+            }
+        }else{
+            $error_message = "Email not verified";
+        }
         
-        //put into session
-        $_SESSION['role_id'] = $role_id;
-        if($role_id == 1){
-            header("Location: adminindex.php");
-            exit();
-        }
-        else if($role_id == 2){
-            header("Location: index.php");
-            exit();
-        }
-        else{
-            header("Location: rider.php");
-            exit();
-        }
         
       }
       else {
@@ -139,6 +150,16 @@
     </script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <?php if (isset($error_message)): ?>
+    <script>
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: '<?php echo $error_message; ?>',
+      });
+    </script>
+  <?php endif; ?>
     
 </body>
 </html>
