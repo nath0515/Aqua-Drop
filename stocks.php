@@ -1,3 +1,7 @@
+<?php 
+	require ('session.php');
+	require ('db.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -14,7 +18,7 @@
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand ps-3" href="index.html">
+            <a class="navbar-brand ps-3" href="adminindex.php">
                 <img src="icons/transparentlogo.png" style="width: 200px; height: 150px;">
             </a>
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i></button>
@@ -35,14 +39,15 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark">
                     <div class="sb-sidenav-menu">
                         <div class="nav align-items-center">
-                            <a class="nav-link" href="index.php"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>Home</a>
+                            <a class="nav-link" href="adminindex.php"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>Home</a>
                             <a class="nav-link" href="orders.php"><div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i></div>Orders</a>
-                            <a class="nav-link" href="stocks.html"><div class="sb-nav-link-icon"><i class="bi bi-box-seam-fill"></i></div>Stock</a>
+                            <a class="nav-link" href="stocks.php"><div class="sb-nav-link-icon"><i class="bi bi-box-seam-fill"></i></div>Stock</a>
                             <a class="nav-link" href="sales.php"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>Sales</a>
                             <a class="nav-link" href="expenses.php"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>Expenses</a>
                         </div>
                     </div>
-                    <div class="sb-sidenav-footer"><div class="small">Logged in as:</div>Start Bootstrap</div>
+                    <div class="sb-sidenav-footer"><div class="small">Logged in as:</div>
+                    <?php echo $_SESSION['username']?>
                 </nav>
             </div>
             <div id="layoutSidenav_content">

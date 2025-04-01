@@ -61,7 +61,7 @@
                                             <i class="far fa-check-circle"></i> <span> Length more than 5.</span>
                                         </div>
                                         <div id="check1">
-                                            <i class="far fa-check-circle"></i> <span> Length less than 10.</span>
+                                            <i class="far fa-check-circle"></i> <span> Length less than 8.</span>
                                         </div>
                                         <div id="check2">
                                             <i class="far fa-check-circle"></i> <span> Contains numerical character.</span>

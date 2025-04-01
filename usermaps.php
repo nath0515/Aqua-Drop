@@ -1,4 +1,7 @@
->
+<?php 
+	require ('session.php');
+	require ('db.php');
+?>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -29,14 +32,14 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="adminindex.php">
+            <a class="navbar-brand ps-3" href="index.php">
 
 
                 <img src="icons/transparentlogo.png" style="width: 200px; height: 150px;">
 
             </a>
             <!-- Sidebar Toggle-->
-            <!-- <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button> -->
+           <!-- <<button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button> -->
             <!-- Navbar Search-->
            
             <!-- Navbar-->
@@ -58,18 +61,15 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav align-items-center">
                          
-                            <a class="nav-link" href="adminindex.php">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Home
+                            <a class="nav-link" href="index.php">
+                            <div class="sb-nav-link-icon"><i class="fas fa-home"></i> Home</div>
                             </a>
-                           
-                            <a class="nav-link" href="orders.php">
-                                <div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i></div>
-                                Orders
+                        
+                            <a class="nav-link" href="customer_orders.php"><i class="fas fa-shopping-cart sb-nav-link-icon"></i> Orders</a>
                             </a>
+
                             <a class="nav-link" href="maps.php">
-                                <div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i></div>
-                                Map
+                                <div class="sb-nav-link-icon"><i class="bi bi-card-checklist"></i>Map</div>
                             </a>
 
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
@@ -105,8 +105,6 @@
                                     </div>
                                 </nav>
                             </div>
-                           
-                            
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">

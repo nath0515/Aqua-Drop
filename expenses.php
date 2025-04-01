@@ -100,7 +100,7 @@
                                 Orders
                             </a>
 
-                            <a class="nav-link" href="stocks.html">
+                            <a class="nav-link" href="stocks.php">
                                 <div class="sb-nav-link-icon"><i class="bi bi-box-seam-fill"></i></div>
                                 Stock
                             </a>

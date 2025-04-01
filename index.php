@@ -67,6 +67,8 @@ require('db.php');
     </nav>
 
 
+    
+
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark">
@@ -81,6 +83,7 @@ require('db.php');
         </div>
 
         <div id="layoutSidenav_content">
+            
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Home</h1>
@@ -95,7 +98,7 @@ require('db.php');
                             <div class="col">
                                 <div class="card h-100">
                                     <div class="card-body text-center">
-                                        <img src="icons/withfaucet.jpeg" alt="Boiled Water" class="img-fluid mb-1" style="max-width: 150px;">
+                                    <img src="icons/withfaucet.jpeg" width="100px" height="100px" class="rounded">
                                         <h3 class="card-title">Boiled Water</h3>
                                         <p class="card-text">Price: 20 Php</p>
                                         <div class="d-flex justify-content-center align-items-center mb-1">
@@ -113,7 +116,7 @@ require('db.php');
                             <div class="col">
                                 <div class="card h-100">
                                     <div class="card-body text-center">
-                                        <img src="logo.png" alt="GG Water" class="img-fluid mb-1" style="max-width: 150px;">
+                                    <img src="icons/withoutfaucet.jpg" width="100px" height="100px" class="rounded">
                                         <h3 class="card-title">GG</h3>
                                         <p class="card-text">Price: 20 Php</p>
                                         <div class="d-flex justify-content-center align-items-center mb-1">
@@ -126,6 +129,22 @@ require('db.php');
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                    <img src="icons/withoutfaucet.jpg" width="100px" height="100px" class="rounded">
+                                        <h3 class="card-title">Holy Water</h3>
+                                        <p class="card-text">Price: 30 Php</p>
+                                        <div class="d-flex justify-content-center align-items-center mb-1">
+                                            <button class="btn btn-secondary" onclick="updateQuantity('Holy Water', -1, 20)">-</button>
+                                            <span class="mx-3" id="Holy Water-qty">1</span>
+                                            <button class="btn btn-secondary" onclick="updateQuantity('Holy Water', 1, 20)">+</button>
+                                        </div>
+                                        <p class="total-price mt-2">Total: <span id="Holy Water-total">30.00</span> Php</p>
+                                        <button class="btn btn-primary" onclick="placeOrder('Holy Water', 20, 3)">Order</button>
+                                    </div>
+                                    
 
                         </div>
                     </div>
@@ -165,6 +184,7 @@ require('db.php');
             </div>
         </div>
     </div>
+    
 
     <!-- Bootstrap Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

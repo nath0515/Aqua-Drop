@@ -29,7 +29,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- Top Navigation Bar -->
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="home.php">Aquadrop</a>
+            <a class="navbar-brand ps-3" href="index.php">Aquadrop</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
                 <i class="fas fa-bars"></i>
@@ -55,7 +55,6 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Core</div>
                             <a class="nav-link" href="index.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>
                                 Home
@@ -64,6 +63,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
                                 Orders
                             </a>
+                            <a class="nav-link" href="usermaps.php"><i class="fas fa-map sb-nav-link-icon"></i> Map</a>
                         </div>
                     </div>
                 </nav>
